@@ -1,0 +1,48 @@
+{
+  "name": "CPA-XXX",
+  "description": "CLIProxyAPI 管理面板",
+  "language": "python",
+  "entrypoint": "app.py",
+  "env_example": ".env.example",
+  "ports": [8080],
+  "healthcheck": {
+    "path": "/api/resources",
+    "method": "GET",
+    "timeout_seconds": 5
+  },
+  "install": {
+    "venv_dir": ".venv",
+    "requirements": "requirements.txt",
+    "windows": {
+      "steps": [
+        "python -m venv .venv",
+        ".venv\\Scripts\\activate",
+        "pip install -r requirements.txt",
+        "copy .env.example .env"
+      ],
+      "start": "python app.py"
+    },
+    "linux": {
+      "steps": [
+        "python3 -m venv .venv",
+        "source .venv/bin/activate",
+        "pip install -r requirements.txt",
+        "cp .env.example .env"
+      ],
+      "start": "python app.py",
+      "systemd": {
+        "service_name": "cliproxy-panel",
+        "description": "CLIProxy Management Panel",
+        "exec_start": ".venv/bin/python app.py",
+        "working_directory": ".",
+        "restart": "always",
+        "restart_sec": 5
+      }
+    }
+  },
+  "scripts": {
+    "auto_install": "scripts/auto_install.py",
+    "install_sh": "scripts/install.sh",
+    "install_ps1": "scripts/install.ps1"
+  }
+}

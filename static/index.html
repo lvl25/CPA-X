@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPA-XX 管理面板</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0c1222 0%, #1a1a2e 50%, #16213e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg-hover: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --blur: blur(20px);
+            --text-primary: rgba(255, 255, 255, 0.68);
+            --text-secondary: rgba(255, 255, 255, 0.56);
+            --text-muted: rgba(255, 255, 255, 0.40);
+            --accent: #6a8fa1;
+            --accent-glow: 0 0 20px rgba(106, 143, 161, 0.32);
+            --success: #5aa576;
+            --success-glow: 0 0 15px rgba(90, 165, 118, 0.26);
+            --warning: #b99245;
+            --warning-glow: 0 0 15px rgba(185, 146, 69, 0.24);
+            --danger: #b76a6a;
+            --danger-glow: 0 0 15px rgba(183, 106, 106, 0.26);
+            --purple: #7a688a;
+            --purple-glow: 0 0 15px rgba(122, 104, 138, 0.28);
+            --req-number: #7aa0bc;
+            --req-unit: #8a909a;
+            --quote-font-size: 15px;
+            --quote-author-size: 13px;
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #e0e5ec 0%, #f0f4f8 50%, #e8eef5 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-bg-hover: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --text-primary: #2d323b;
+            --text-secondary: rgba(45, 50, 59, 0.65);
+            --text-muted: rgba(45, 50, 59, 0.5);
+            --accent: #6a8fa1;
+            --accent-glow: 0 0 20px rgba(106, 143, 161, 0.24);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 { width: 400px; height: 400px; background: linear-gradient(135deg, #00a8cc, #007799); top: -100px; left: -100px; }
+        .orb-2 { width: 350px; height: 350px; background: linear-gradient(135deg, #8844cc, #5050c1); bottom: -50px; right: -50px; animation-delay: -7s; }
+        .orb-3 { width: 250px; height: 250px; background: linear-gradient(135deg, #00aa55, #008844); top: 50%; left: 50%; animation-delay: -14s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* 头部 */
+        .header {
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            height: 56px;
+            box-sizing: border-box;
+        }
+
+        .logo { display: flex; align-items: center; gap: 8px; }
+        .logo-icon {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--accent-glow);
+        }
+        .logo-icon svg { width: 16px; height: 16px; fill: white; }
+        .logo-text {
+            font-size: 14px; font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-center { display: flex; align-items: center; gap: 16px; }
+        .header-stat { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .header-stat-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+        .header-stat-dot.green { background: var(--success); color: var(--success); }
+        .header-stat-dot.red { background: var(--danger); color: var(--danger); }
+        .header-stat-dot.blue { background: var(--accent); color: var(--accent); }
+        .header-stat-value { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-primary); }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .theme-btn {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .theme-btn:hover { background: var(--glass-bg-hover); box-shadow: var(--accent-glow); }
+        .theme-btn svg { width: 16px; height: 16px; fill: var(--text-secondary); }
+
+        /* 主容器 - 两列布局 */
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 左侧功能区 70% */
+        .main-panel {
+            flex: 7;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* 让卡片网格填满空间 */
+        .main-panel > .cards-grid {
+            align-content: start;
+        }
+        .main-panel > .cards-grid > .card {
+            display: flex;
+            flex-direction: column;
+        }
+        .main-panel > .cards-grid > .card .btn-group {
+            margin-top: auto;
+        }
+
+        /* 右侧日志区 30% */
+        .log-panel {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            min-width: 310px;
+            min-height: 0;
+        }
+
+        /* 卡片网格 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            align-items: start;
+        }
+        .cards-grid > .card { min-width: 0; width: 100%; align-self: start; }
+        .cards-grid.fixed-grid { grid-auto-rows: var(--grid-row-height, 320px); }
+        .cards-grid.fixed-grid > .card { height: var(--grid-row-height, 320px); overflow: hidden; }
+        .cards-grid.fixed-top { --grid-row-height: 360px; }
+        .cards-grid.fixed-middle { --grid-row-height: 260px; }
+        .cards-grid.fixed-bottom { --grid-row-height: 256px; }
+
+        /* 卡片 - 紧凑版 */
+        .card {
+            padding: 12px;
+            min-width: 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .card-header { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+        .card-icon {
+            width: 42px; height: 42px;
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .card-icon svg { width: 21px; height: 21px; fill: white; }
+        .card-icon.blue { background: linear-gradient(135deg, #00a8cc, #007799); box-shadow: 0 0 15px rgba(0, 168, 204, 0.3); }
+        .card-icon.purple { background: linear-gradient(135deg, #8844cc, #6b44a6); box-shadow: var(--purple-glow); }
+        .card-icon.green { background: linear-gradient(135deg, #00aa55, #008844); box-shadow: var(--success-glow); }
+        .card-icon.orange { background: linear-gradient(135deg, #cc8800, #aa6600); box-shadow: var(--warning-glow); }
+        .card-icon.pink { background: linear-gradient(135deg, #cc5580, #a43858); box-shadow: 0 0 15px rgba(204, 85, 128, 0.3); }
+        .card-icon.cyan { background: linear-gradient(135deg, #00a8a6, #0770b8); box-shadow: 0 0 15px rgba(0, 168, 166, 0.3); }
+        .card-icon.red { background: linear-gradient(135deg, #cc3355, #aa2244); box-shadow: var(--danger-glow); }
+
+        .card-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+        .card-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        .service-card { min-height: 300px; }
+        .quote-box { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 0; }
+        .quote-controls { display: flex; gap: 6px; align-items: center; margin-top: auto; }
+        .quote-size-controls { display: flex; gap: 6px; margin-left: auto; white-space: nowrap; width: 100%; justify-content: flex-end; }
+        .quote-size-controls .btn { padding: 4px 6px; font-size: 10px; }
+        .health-card { display: flex; flex-direction: column; min-height: 0; }
+        .health-service-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+        .health-service-info .info-row { padding: 4px 0; border-bottom: none; font-size: 11px; }
+        .health-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+        .health-actions .btn-group { flex-wrap: nowrap; gap: 6px; margin-top: 0; }
+        .health-pricing { margin-top: 6px; border-top: 1px solid var(--glass-border); padding-top: 6px; }
+        .health-pricing-title { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .health-pricing .pricing-grid { gap: 4px; }
+        .health-pricing .input { padding: 4px 6px; font-size: 11px; }
+        .health-pricing .btn-group { margin-top: 4px; }
+        .health-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+        .health-actions .btn-group { flex-wrap: nowrap; gap: 6px; margin-top: 0; }
+        .export-actions { flex-direction: column; align-items: center; gap: 6px; }
+        .export-actions .btn { width: 140px; justify-content: center; }
+        .request-card { display: flex; flex-direction: column; min-height: 0; }
+        .request-body { display: flex; flex-direction: column; gap: 6px; }
+        .request-body .req-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+        .request-body .req-summary-item { background: var(--glass-bg); border-radius: 8px; padding: 8px; text-align: center; }
+        .request-body .req-summary-number {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .request-body .req-summary-number.summary-medium { font-size: 24px; }
+        .request-body .req-summary-number.summary-small { font-size: 20px; }
+        .request-body .req-summary-number.count { color: var(--accent); }
+        .request-body .req-summary-number.tokens { color: var(--req-number); }
+        .request-body .req-summary-number.cost { color: var(--success); }
+        .request-body .req-summary-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+        .request-body .req-section { margin-top: 6px; border-top: 1px solid var(--glass-border); padding-top: 6px; }
+        .request-body .req-tokens-grid { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 4px; }
+        .request-body .req-tokens-grid .req-token-value,
+        .request-body .req-tokens-grid .req-cost-value {
+            font-size: 13px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .request-body .req-tokens-grid .req-token-number { color: var(--req-number); font-weight: 700; }
+        .request-body .req-tokens-grid .req-token-unit { color: var(--req-unit); }
+        .request-body .req-tokens-grid .req-cost-number { color: var(--req-number); font-weight: 700; }
+        .request-body .req-tokens-grid .req-cost-unit { color: var(--success); }
+        .request-body .req-tokens-grid .req-total {
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .request-body .req-total-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 4px;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 4px 6px;
+            background: rgba(0, 0, 0, 0.18);
+        }
+        .request-body .req-tokens-grid .req-total .req-token-number,
+        .request-body .req-tokens-grid .req-total .req-cost-number { color: #2f5f86; }
+        .request-body .req-tokens-grid .req-total .req-token-unit { color: #4d525b; }
+        .request-body .req-tokens-grid .req-total .req-cost-unit { color: #2f6b4b; }
+        .pricing-toggle summary {
+            list-style: none;
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .pricing-toggle summary::-webkit-details-marker { display: none; }
+        .pricing-toggle[open] summary { color: var(--accent); }
+        .pricing-toggle .pricing-body { margin-top: 6px; }
+        #quote-text {
+            font-size: var(--quote-font-size);
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-primary);
+            height: 120px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        #quote-text::-webkit-scrollbar { width: 0; height: 0; }
+        #quote-author {
+            font-size: var(--quote-author-size);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+        }
+        .pricing-grid .input { min-width: 0; width: 100%; }
+
+        .model-card { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+        .model-card .model-list { flex: 1; min-height: 0; }
+
+        /* 徽章 */
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+        }
+        .badge.success { color: var(--success); border-color: var(--success); }
+        .badge.danger { color: var(--danger); border-color: var(--danger); }
+        .badge.warning { color: var(--warning); border-color: var(--warning); }
+        .badge.info { color: var(--accent); border-color: var(--accent); }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* 信息行 */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            font-size: 12px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: var(--text-muted); }
+        .info-value { color: var(--text-primary); font-family: 'JetBrains Mono', monospace; }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 9px 15px;
+            border: none;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            backdrop-filter: var(--blur);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sm { padding: 5px 11px; font-size: 11px; }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent), #007799); color: white; box-shadow: var(--accent-glow); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 25px rgba(0, 168, 204, 0.4); }
+
+        .btn-success { background: linear-gradient(135deg, var(--success), #009955); color: white; }
+        .btn-success:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 25px rgba(0, 204, 106, 0.4); }
+
+        .btn-danger { background: linear-gradient(135deg, var(--danger), #aa2244); color: white; }
+        .btn-danger:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 25px rgba(204, 51, 85, 0.4); }
+
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #aa6600); color: white; }
+        .btn-warning:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 25px rgba(204, 136, 0, 0.4); }
+
+        .btn-ghost { background: var(--glass-bg); color: var(--text-secondary); border: 1px solid var(--glass-border); }
+        .btn-ghost:hover:not(:disabled) { background: var(--glass-bg-hover); color: var(--accent); border-color: var(--accent); }
+
+        .btn-group { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
+
+        /* 开关 */
+        .switch {
+            width: 40px; height: 22px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .switch::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            top: 2px; left: 3px;
+            transition: all 0.3s ease;
+        }
+        .switch.on { background: linear-gradient(135deg, var(--success), #009955); border-color: var(--success); }
+        .switch.on::after { transform: translateX(17px); background: white; }
+
+        /* 输入框 */
+        .input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            backdrop-filter: var(--blur);
+            transition: all 0.3s ease;
+        }
+        .input:focus { outline: none; border-color: var(--accent); box-shadow: var(--accent-glow); }
+        [data-theme="light"] .input { background: rgba(255, 255, 255, 0.8); }
+        .input-full { width: 100%; }
+
+        /* 选择框 */
+        .select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-size: 13px;
+            backdrop-filter: var(--blur);
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 28px;
+        }
+        .select:focus { outline: none; border-color: var(--accent); }
+        .select option { background: #1a1a2e; color: #ffffff; padding: 8px; }
+        [data-theme="light"] .select { background: rgba(255, 255, 255, 0.8); }
+        [data-theme="light"] .select option { background: #ffffff; color: #1a1a2e; }
+
+        /* 统计数字 */
+        .stat-number {
+            font-size: 30px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        .req-count-number {
+            font-size: 45px !important;
+            font-weight: 800;
+            text-shadow: 0 0 12px rgba(0, 168, 204, 0.45);
+        }
+        .req-mini-number {
+            font-size: 27px !important;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(0, 168, 204, 0.25);
+        }
+        .req-mini-number-sm {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .req-mini-success { color: var(--success); }
+        .req-mini-fail { color: var(--danger); }
+        .req-summary-compact { display: flex; gap: 6px; margin-top: 4px; }
+        .req-summary-compact .req-summary-box {
+            flex: 1;
+            background: var(--glass-bg);
+            border-radius: 8px;
+            padding: 4px 6px;
+            text-align: center;
+        }
+        .req-summary-compact .req-summary-label { font-size: 8px; color: var(--text-muted); }
+        .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+        /* 进度条 */
+        .progress-bar {
+            height: 7px;
+            background: var(--glass-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .progress-fill.blue { background: linear-gradient(90deg, var(--accent), #007799); }
+        .progress-fill.green { background: linear-gradient(90deg, var(--success), #009955); }
+        .progress-fill.orange { background: linear-gradient(90deg, var(--warning), #aa6600); }
+        .progress-fill.red { background: linear-gradient(90deg, var(--danger), #aa2244); }
+        .progress-fill.purple { background: linear-gradient(90deg, var(--purple), #6b44a6); }
+
+        /* 日志区域 */
+        .log-card { display: flex; flex-direction: column; overflow: hidden; flex: 1; }
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .log-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+        .log-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.55;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .log-entry.log-success { border-left-color: #3a7d5a; }
+        .log-entry.log-success .log-status { color: #4a9868; font-weight: 600; }
+        .log-entry.log-error { border-left-color: #984a4a; }
+        .log-entry.log-error .log-status { color: #aa5b5b; font-weight: 600; }
+        .log-entry.log-warning { border-left-color: #98742a; }
+        .log-entry.log-warning .log-status { color: #a9853a; font-weight: 600; }
+        .log-entry {
+            padding: 7px 11px;
+            margin-bottom: 5px;
+            background: var(--glass-bg);
+            border-radius: 5px;
+            border-left: 3px solid var(--accent);
+            word-break: break-all;
+        }
+        .log-time { color: var(--accent); margin-right: 9px; }
+        .log-msg { color: var(--text-secondary); }
+
+        /* 健康检查列表 */
+        .health-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+        .health-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            background: var(--glass-bg);
+            border-radius: 7px;
+            font-size: 11px;
+        }
+        .health-name { display: flex; align-items: center; gap: 6px; }
+        .health-icon { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+        .health-mark { font-weight: 700; }
+        .health-icon.pass { color: var(--success); }
+        .health-icon.fail { color: var(--danger); }
+        .health-icon.warn { color: var(--warning); }
+
+        /* 模型列表 */
+        .model-list { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; overflow-y: auto; }
+        .model-group { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 6px; }
+        .model-group summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); outline: none; }
+        .model-group-list { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+        .model-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 13px;
+            background: var(--glass-bg);
+            border-radius: 7px;
+            font-size: 12px;
+        }
+        .model-name { font-weight: 600; color: var(--text-primary); }
+        .model-provider { font-size: 10px; color: var(--text-muted); }
+
+        /* 可视化配置 */
+        .config-visual { display: flex; flex-direction: column; gap: 10px; }
+        .config-section {
+            background: var(--glass-bg);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .config-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .config-field:last-child { border-bottom: none; }
+        .config-field-label { font-size: 12px; color: var(--text-secondary); }
+        .config-field-value { font-size: 12px; }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+
+        .modal-box {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal.active .modal-box { transform: translateY(0); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .modal-title { font-size: 16px; font-weight: 600; }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .modal-close:hover { background: var(--danger); border-color: var(--danger); }
+        .modal-close:hover svg { fill: white; }
+        .modal-close svg { width: 16px; height: 16px; fill: var(--text-muted); }
+
+        .modal-body { padding: 20px; flex: 1; overflow-y: auto; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .config-editor {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            resize: none;
+        }
+        .config-editor:focus { outline: none; border-color: var(--accent); }
+
+        /* 通知 */
+        .toast {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            padding: 12px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 13px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.warning { border-left: 3px solid var(--warning); }
+
+        /* 更新提醒横幅 */
+        .update-banner {
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), rgba(0, 212, 255, 0.2));
+            border: 1px solid var(--purple);
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            display: none;
+        }
+        .update-banner.show { display: flex; }
+        .update-banner-text { font-size: 13px; display: flex; align-items: center; gap: 10px; }
+        .update-banner-text svg { width: 20px; height: 20px; fill: var(--purple); }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <header class="header glass">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="logo-text">CPA-XX</span>
+        </div>
+        <div class="header-center">
+            <div class="header-stat">
+                <span class="header-stat-dot green" id="header-status-dot"></span>
+                <span>服务</span>
+                <span class="header-stat-value" id="header-status">-</span>
+            </div>
+            <div class="header-stat">
+                <span class="header-stat-dot blue"></span>
+                <span>版本</span>
+                <span class="header-stat-value" id="header-version">-</span>
+            </div>
+            <div class="header-stat">
+                <span class="header-stat-dot blue"></span>
+                <span>请求</span>
+                <span class="header-stat-value" id="header-requests">0</span>
+            </div>
+            <div class="header-stat">
+                <span class="header-stat-dot blue"></span>
+                <span>模型</span>
+                <span class="header-stat-value" id="header-models">0</span>
+            </div>
+            <div class="header-stat">
+                <span class="header-stat-dot" id="header-health-dot"></span>
+                <span>健康</span>
+                <span class="header-stat-value" id="header-health">-</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-ghost btn-sm" onclick="refreshAll()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                刷新
+            </button>
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 7a5 5 0 100 10 5 5 0 000-10zM12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 左侧功能区 -->
+        <div class="main-panel">
+            <!-- 更新提醒 -->
+            <div id="update-banner" class="update-banner glass">
+                <div class="update-banner-text">
+                    <svg viewBox="0 0 24 24"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3v7.12z"/></svg>
+                    <span>发现新版本可用！当前: <span id="banner-current">-</span> → 最新: <span id="banner-latest">-</span></span>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="triggerUpdate(false)">立即更新</button>
+            </div>
+
+            <!-- 服务与状态 -->
+                <div class="cards-grid fixed-grid fixed-top">
+                <!-- 名人语录 -->
+                <div class="card glass service-card">
+                    <div class="card-header">
+                        <div class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                        <div>
+                            <div class="card-title">名人语录</div>
+                            <div class="card-subtitle">随机语录</div>
+                        </div>
+                    </div>
+                    <div class="quote-box" style="margin-top:10px;background:var(--glass-bg);border-radius:8px;padding:12px;">
+                        <div id="quote-text">-</div>
+                        <div id="quote-author" style="margin-top:6px;text-align:right;">-</div>
+                        <div class="quote-controls">
+                            <span style="font-size:10px;color:var(--text-muted);">刷新间隔</span>
+                            <input type="number" id="quote-interval-input" class="input" style="width:60px;" value="5" min="1">
+                            <span style="font-size:10px;color:var(--text-muted);">分钟</span>
+                            <button class="btn btn-ghost btn-sm" onclick="refreshQuote()" style="margin-left:auto;">换一条</button>
+                            <button class="btn btn-ghost btn-sm" onclick="addQuote()" style="opacity:0.6;font-size:10px;">添加</button>
+                        </div>
+                        <div class="quote-size-controls" style="margin-top:6px;">
+                            <button class="btn btn-ghost btn-sm" id="quote-size-btn" onclick="adjustQuoteFont('text')">语录：15 px</button>
+                            <button class="btn btn-ghost btn-sm" id="quote-author-size-btn" onclick="adjustQuoteFont('author')">作者：13 px</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 请求统计 -->
+                <div class="card glass request-card">
+                    <div class="card-header">
+                        <div class="card-icon green"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></div>
+                        <div style="flex:1;">
+                            <div class="card-title">请求统计</div>
+                            <div class="card-subtitle">API 使用监控</div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="clearStats()" title="清空统计">清空</button>
+                    </div>
+                    <div class="card-body request-body">
+                        <div class="req-summary-grid">
+                            <div class="req-summary-item">
+                                <div class="req-summary-number count" id="req-count">0</div>
+                                <div class="req-summary-label">总请求数</div>
+                            </div>
+                            <div class="req-summary-item">
+                                <div class="req-summary-number tokens" id="req-total-tokens">-</div>
+                                <div class="req-summary-label">百万Tokens</div>
+                            </div>
+                            <div class="req-summary-item">
+                                <div class="req-summary-number cost" id="req-total-cost">-</div>
+                                <div class="req-summary-label">美元</div>
+                            </div>
+                        </div>
+                        <div class="req-summary-compact">
+                            <div class="req-summary-box">
+                                <div class="req-mini-number-sm req-mini-success" id="req-success">0</div>
+                                <div class="req-summary-label">成功</div>
+                            </div>
+                            <div class="req-summary-box">
+                                <div class="req-mini-number-sm req-mini-fail" id="req-failed">0</div>
+                                <div class="req-summary-label">失败</div>
+                            </div>
+                        </div>
+                        <div class="req-section">
+                            <div class="req-tokens-grid">
+                                <div class="req-token-value" id="req-input-tokens">-</div>
+                                <div class="req-cost-value" style="text-align:right;" id="req-input-cost">-</div>
+
+                                <div class="req-token-value" id="req-output-tokens">-</div>
+                                <div class="req-cost-value" style="text-align:right;" id="req-output-cost">-</div>
+
+                                <div class="req-token-value" id="req-cache-tokens">-</div>
+                                <div class="req-cost-value" style="text-align:right;" id="req-cache-cost">-</div>
+                            </div>
+                        </div>
+                        <div class="req-section pricing-compact">
+                            <div class="health-pricing-title">Token 价格设置（输入/输出/缓存）</div>
+                            <div class="pricing-grid">
+                                <input type="number" id="pricing-input" class="input" placeholder="输入" step="0.001" min="0">
+                                <input type="number" id="pricing-output" class="input" placeholder="输出" step="0.001" min="0">
+                                <input type="number" id="pricing-cache" class="input" placeholder="缓存" step="0.001" min="0">
+                            </div>
+                            <div class="btn-group" style="margin-top:4px;">
+                                <button class="btn btn-ghost btn-sm" onclick="savePricing()" style="flex:1;">保存价格</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 可用模型 -->
+                <div class="card glass model-card">
+                    <div class="card-header">
+                        <div class="card-icon cyan"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+                        <div style="flex:1;">
+                            <div class="card-title">可用模型</div>
+                            <div class="card-subtitle" id="model-count">共 0 个模型</div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="loadModelsFromAPI()">刷新</button>
+                    </div>
+                    <div id="model-list" class="model-list">
+                        <div style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</div>
+                    </div>
+                </div>
+
+                <!-- 健康状态 -->
+                <div class="card glass health-card">
+                    <div class="card-header">
+                        <div class="card-icon pink"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+                        <div>
+                            <div class="card-title">健康状态</div>
+                            <div class="card-subtitle">系统健康检查</div>
+                        </div>
+                    </div>
+                    <div class="health-service-info" style="margin-bottom:6px;">
+                        <div class="info-row"><span class="info-label">状态</span><span class="badge info" id="health-service-status"><span class="badge-dot"></span>-</span></div>
+                        <div class="info-row"><span class="info-label">PID</span><span class="info-value" id="health-service-pid">-</span></div>
+                        <div class="info-row"><span class="info-label">运行时间</span><span class="info-value" id="health-service-uptime">-</span></div>
+                    </div>
+                    <div id="health-summary" style="text-align:center;padding:4px 0;">
+                        <div class="stat-number" style="font-size:20px;" id="health-overall">-</div>
+                        <div class="stat-label">整体状态</div>
+                    </div>
+                    <div id="health-details" class="health-list" style="margin-top:6px;">
+                        <div class="health-item"><span class="health-name">服务进程</span><span class="health-mark" id="health-service">-</span></div>
+                        <div class="health-item"><span class="health-name">配置文件</span><span class="health-mark" id="health-config">-</span></div>
+                        <div class="health-item"><span class="health-name">磁盘空间</span><span class="health-mark" id="health-disk">-</span></div>
+                        <div class="health-item"><span class="health-name">内存使用</span><span class="health-mark" id="health-memory">-</span></div>
+                    </div>
+                    <div class="health-actions">
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" onclick="serviceAction('start')">启动</button>
+                            <button class="btn btn-danger btn-sm" onclick="serviceAction('stop')">停止</button>
+                            <button class="btn btn-warning btn-sm" onclick="serviceAction('restart')">重启</button>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="runHealthCheck()">运行检查</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 版本与更新 -->
+                <div class="cards-grid fixed-grid fixed-middle">
+                <!-- 版本更新 -->
+                <div class="card glass export-card">
+                    <div class="card-header">
+                        <div class="card-icon purple"><svg viewBox="0 0 24 24"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3v7.12z"/></svg></div>
+                        <div>
+                            <div class="card-title">版本更新</div>
+                            <div class="card-subtitle">自动同步 GitHub</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin:10px 0;">
+                        <div style="flex:1;background:var(--glass-bg);border-radius:8px;padding:12px;text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);">当前</div>
+                            <div id="current-ver" style="font-size:16px;font-weight:700;color:var(--accent);font-family:monospace;">-</div>
+                        </div>
+                        <div style="flex:1;background:var(--glass-bg);border-radius:8px;padding:12px;text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);">最新</div>
+                            <div id="latest-ver" style="font-size:16px;font-weight:700;color:var(--accent);font-family:monospace;">-</div>
+                        </div>
+                    </div>
+                    <div id="update-history-info" style="font-size:11px;color:var(--text-muted);padding:6px 0;border-top:1px solid var(--glass-border);margin-top:6px;">
+                        <div id="last-update-time">上次更新: -</div>
+                        <div id="recent-updates" style="margin-top:4px;"></div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-ghost btn-sm" onclick="checkUpdate()">检查</button>
+                        <button class="btn btn-primary btn-sm" onclick="triggerUpdate(false)">更新</button>
+                        <button class="btn btn-warning btn-sm" onclick="triggerUpdate(true)">强制</button>
+                    </div>
+                </div>
+
+                <!-- 自动更新 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon orange"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+                        <div>
+                            <div class="card-title">自动更新</div>
+                            <div class="card-subtitle">智能更新设置</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">自动更新</span>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span id="auto-label" style="font-size:11px;color:var(--text-muted);">关闭</span>
+                            <div id="auto-switch" class="switch" onclick="toggleAutoUpdate()"></div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label" title="多久检查一次新版本">检查间隔（检查更新的间隔）</span>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <input type="number" id="check-interval-input" class="input" style="width:70px;" value="5" min="1">
+                            <span style="font-size:11px;color:var(--text-muted);">分钟</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label" title="无请求日志持续多久后才执行更新">空闲阈值（多久没有请求日志则检查更新）</span>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <input type="number" id="idle-input" class="input" style="width:70px;" value="30" min="1">
+                            <span style="font-size:11px;color:var(--text-muted);">分钟</span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-ghost btn-sm" onclick="saveUpdateSettings()" style="flex:1;">保存设置</button>
+                    </div>
+                </div>
+
+                <!-- 路由策略 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+                        <div>
+                            <div class="card-title">路由策略</div>
+                            <div class="card-subtitle">负载均衡模式</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">当前策略</span>
+                        <span class="badge info" id="current-routing">-</span>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <select id="routing-select" class="select" style="width:100%;">
+                            <option value="round-robin">轮询 (Round Robin)</option>
+                            <option value="fill-first">填充优先 (Fill First)</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm" onclick="setRouting()" style="flex:1;">应用</button>
+                    </div>
+                </div>
+
+                <!-- 配置管理 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon purple"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+                        <div>
+                            <div class="card-title">配置管理</div>
+                            <div class="card-subtitle">config.yaml</div>
+                        </div>
+                    </div>
+                    <div class="btn-group" style="flex-direction:column;gap:6px;">
+                        <button class="btn btn-primary btn-sm" onclick="loadConfig()" style="width:100%;">编辑配置</button>
+                        <button class="btn btn-ghost btn-sm" onclick="validateConfig()" style="width:100%;">验证配置</button>
+                        <button class="btn btn-warning btn-sm" onclick="reloadConfig()" style="width:100%;">重载配置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 监控与工具 -->
+                <div class="cards-grid fixed-grid fixed-bottom">
+                <!-- CPU -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M17 17H7V7h10m4 4v2h-2v-2m0-2V9h2v2m-2 6v-2h2v2M9 17H7v-2h2m0-2H7v-2h2m0-2H7V7h2m6 4h-2V9h2m0 4h-2v-2h2m0 4h-2v-2h2m2-4V7h-2v2m0 10h2v-2h-2M9 3H7v2h2m8 0h2V3h-2m-4 0h-2v2h2M3 7v2H1V7m0 4v2h2v-2m0 4h2v-2H1m0 6h2v-2H1M3 3H1v2h2m6 18H7v-2h2m8 0h2v2h-2m-4 0h-2v2h2m6-6v2h2v-2m0-4v2h2v-2m0 8h2v-2h-2"/></svg></div>
+                        <div style="flex:1;">
+                            <div class="card-title">CPU 使用率</div>
+                            <div class="card-subtitle" id="cpu-detail">- 核心 | - MHz</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="stat-number" id="cpu-percent">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill blue" id="cpu-bar" style="width:0%;"></div>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:8px;">
+                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:13px;font-weight:600;color:var(--accent);" id="cpu-load-1m">0.00</div>
+                            <div style="font-size:9px;color:var(--text-muted);">1分钟</div>
+                        </div>
+                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="cpu-load-5m">0.00</div>
+                            <div style="font-size:9px;color:var(--text-muted);">5分钟</div>
+                        </div>
+                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="cpu-load-15m">0.00</div>
+                            <div style="font-size:9px;color:var(--text-muted);">15分钟</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.4;">
+                        <div id="cpu-model">CPU 型号：-</div>
+                        <div id="cloud-vendor">云厂商：-</div>
+                        <div id="os-version">系统版本：-</div>
+                    </div>
+                </div>
+
+                <!-- 内存 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon purple"><svg viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg></div>
+                        <div style="flex:1;">
+                            <div class="card-title">内存使用率</div>
+                            <div class="card-subtitle" id="mem-detail">- / -</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="stat-number" id="mem-percent">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill purple" id="mem-bar" style="width:0%;"></div>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:12px;font-weight:600;color:var(--success);" id="mem-available">0</div>
+                            <div style="font-size:9px;color:var(--text-muted);">可用</div>
+                        </div>
+                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);" id="mem-cached">0</div>
+                            <div style="font-size:9px;color:var(--text-muted);">缓存</div>
+                        </div>
+                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:12px;font-weight:600;color:var(--warning);" id="mem-swap">0%</div>
+                            <div style="font-size:9px;color:var(--text-muted);">Swap</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:12px;font-weight:600;color:var(--accent);" id="cliproxy-cpu">0%</div>
+                            <div style="font-size:9px;color:var(--text-muted);">cliproxy CPU</div>
+                        </div>
+                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
+                            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);" id="cliproxy-mem">0 MB</div>
+                            <div style="font-size:9px;color:var(--text-muted);">cliproxy 内存</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 磁盘 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon orange"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg></div>
+                        <div>
+                            <div class="card-title">磁盘使用率</div>
+                            <div class="card-subtitle" id="disk-detail">- / -</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding:12px 0;">
+                        <div class="stat-number" id="disk-percent">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill orange" id="disk-bar" style="width:0%;"></div>
+                    </div>
+                </div>
+
+                <!-- 数据导出 -->
+                <div class="card glass">
+                    <div class="card-header">
+                        <div class="card-icon green"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+                        <div>
+                            <div class="card-title">数据导出</div>
+                            <div class="card-subtitle">导出日志与统计</div>
+                        </div>
+                    </div>
+                    <div class="btn-group export-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="exportData('logs')">导出日志</button>
+                        <button class="btn btn-ghost btn-sm" onclick="exportData('stats')">导出统计</button>
+                        <button class="btn btn-ghost btn-sm" onclick="exportData('config')">导出配置</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 右侧日志区 -->
+        <div class="log-panel">
+            <div class="log-card glass">
+                <div class="log-header">
+                    <div class="log-title">
+                        <div class="card-icon purple" style="width:28px;height:28px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg></div>
+                        CLIProxy 日志
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn btn-ghost btn-sm" onclick="clearLogDisplay()" title="清空显示">清空</button>
+                        <button class="btn btn-ghost btn-sm" onclick="refreshCliLogs()">刷新</button>
+                    </div>
+                </div>
+                <div id="cli-logs" class="log-box">
+                    <div class="log-entry"><span class="log-msg">加载中...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置编辑模态框 -->
+    <div id="config-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span class="modal-title">编辑配置文件</span>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="config-editor" class="config-editor" placeholder="加载中..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="validateConfigContent()">验证</button>
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveConfig()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 验证结果模态框 -->
+    <div id="validate-modal" class="modal" onclick="closeValidateModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()" style="max-width:500px;">
+            <div class="modal-header">
+                <span class="modal-title">配置验证结果</span>
+                <button class="modal-close" onclick="closeValidateModal()">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="validate-result">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeValidateModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '';
+        const inflight = {
+            refreshStatus: false,
+            refreshResources: false,
+            refreshCliLogs: false,
+            loadModelsFromAPI: false,
+            runHealthCheck: false,
+            refreshUpdateHistory: false
+        };
+        let pricingDirty = false;
+        let pricingInitialized = false;
+
+        // 主题
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.getElementById('theme-icon').innerHTML = isDark
+                ? '<path d="M12 7a5 5 0 100 10 5 5 0 000-10zM12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>'
+                : '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+        }
+
+        // API 调用
+        async function api(endpoint, opts = {}) {
+            const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+
+            const controller = new AbortController();
+            const timeoutMs = typeof opts.timeout === 'number' ? opts.timeout : 15000;
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+                const res = await fetch(API + endpoint, { ...opts, headers, signal: controller.signal });
+                return await res.json().catch(() => null);
+            } catch (e) {
+                if (e && e.name === 'AbortError') {
+                    console.error('请求超时:', endpoint);
+                } else {
+                    console.error(e);
+                }
+                return null;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function formatMillionTokens(value) {
+            const num = Number(value || 0);
+            const formatted = (num / 1000000).toFixed(2);
+            return `<span class="req-token-number">${formatted}</span>&nbsp;&nbsp;<span class="req-token-unit">百万Tokens</span>`;
+        }
+
+        function formatMillionShort(value) {
+            const num = Number(value || 0);
+            return `${(num / 1000000).toFixed(1)}`;
+        }
+
+        function formatUsd(value) {
+            const num = Number(value || 0);
+            const formatted = num.toFixed(2);
+            return `<span class="req-cost-number">${formatted}</span>&nbsp;<span class="req-cost-unit">美元</span>`;
+        }
+
+        function formatUsdShort(value) {
+            const num = Number(value || 0);
+            return `${num.toFixed(1)}`;
+        }
+
+        function applySummarySizing(el) {
+            if (!el) return;
+            const text = (el.textContent || '').trim();
+            const digits = text.replace(/[^0-9]/g, '');
+            el.classList.remove('summary-medium', 'summary-small');
+            if (digits.length >= 5) {
+                el.classList.add('summary-small');
+            } else if (digits.length >= 4) {
+                el.classList.add('summary-medium');
+            }
+        }
+
+        function setPricingValue(id, value, force = false) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            if (!force && document.activeElement === input) return;
+            input.value = value ?? 0;
+        }
+
+        let quoteTimer = null;
+        let quoteTypingTimer = null;
+        let authorTypingTimer = null;
+        const quoteFontDefaults = { text: 15, author: 13 };
+        const quoteFontLimits = { min: 6, max: 40 };
+        const quoteFontState = { text: quoteFontDefaults.text, author: quoteFontDefaults.author };
+
+        function startTypewriter(el, text, opts = {}) {
+            if (!el) return null;
+            const speed = opts.speed || 35;
+            const scroll = opts.scroll || false;
+            const hscroll = opts.hscroll || false;
+            el.textContent = '';
+            el.scrollTop = 0;
+            el.scrollLeft = 0;
+            let idx = 0;
+            const timer = setInterval(() => {
+                idx += 1;
+                el.textContent = text.slice(0, idx);
+                if (scroll) {
+                    el.scrollTop = el.scrollHeight;
+                }
+                if (hscroll) {
+                    el.scrollLeft = el.scrollWidth;
+                }
+                if (idx >= text.length) {
+                    clearInterval(timer);
+                }
+            }, speed);
+            return timer;
+        }
+
+        function updateQuoteFontButtons() {
+            const textBtn = document.getElementById('quote-size-btn');
+            const authorBtn = document.getElementById('quote-author-size-btn');
+            if (textBtn) textBtn.textContent = `语录：${quoteFontState.text} px`;
+            if (authorBtn) authorBtn.textContent = `作者：${quoteFontState.author} px`;
+        }
+
+        function setQuoteFontSizes(textSize, authorSize) {
+            if (!Number.isFinite(textSize) || !Number.isFinite(authorSize)) return;
+            quoteFontState.text = textSize;
+            quoteFontState.author = authorSize;
+            document.documentElement.style.setProperty('--quote-font-size', `${textSize}px`);
+            document.documentElement.style.setProperty('--quote-author-size', `${authorSize}px`);
+            updateQuoteFontButtons();
+        }
+
+        function initQuoteFontSizes() {
+            const savedText = parseFloat(localStorage.getItem('quote_font_size'));
+            const savedAuthor = parseFloat(localStorage.getItem('quote_author_font_size'));
+            const textSize = Number.isFinite(savedText) ? savedText : quoteFontDefaults.text;
+            const authorSize = Number.isFinite(savedAuthor) ? savedAuthor : quoteFontDefaults.author;
+            setQuoteFontSizes(textSize, authorSize);
+        }
+
+        function adjustQuoteFont(type) {
+            const isAuthor = type === 'author';
+            const label = isAuthor ? '作者' : '语录';
+            const current = isAuthor ? quoteFontState.author : quoteFontState.text;
+            const raw = prompt(`请输入${label}字号(px)`, String(current));
+            if (raw === null) return;
+            const value = parseFloat(raw);
+            if (!Number.isFinite(value)) {
+                toast('请输入有效数字', 'error');
+                return;
+            }
+            const clamped = Math.max(quoteFontLimits.min, Math.min(quoteFontLimits.max, value));
+            if (isAuthor) {
+                quoteFontState.author = clamped;
+            } else {
+                quoteFontState.text = clamped;
+            }
+            localStorage.setItem('quote_font_size', quoteFontState.text);
+            localStorage.setItem('quote_author_font_size', quoteFontState.author);
+            setQuoteFontSizes(quoteFontState.text, quoteFontState.author);
+        }
+
+        async function loadQuote() {
+            const d = await api('/api/quote');
+            if (!d) return;
+            const text = d.text || '-';
+            const author = d.author || '-';
+            const textEl = document.getElementById('quote-text');
+            const authorEl = document.getElementById('quote-author');
+            if (quoteTypingTimer) clearInterval(quoteTypingTimer);
+            if (authorTypingTimer) clearInterval(authorTypingTimer);
+            quoteTypingTimer = startTypewriter(textEl, text, { speed: 25, scroll: true });
+            authorTypingTimer = startTypewriter(authorEl, author, { speed: 35 });
+        }
+
+        function refreshQuote() {
+            loadQuote();
+        }
+
+        async function addQuote() {
+            const line = prompt('请输入语录（格式：内容 出自：作者）');
+            if (!line) return;
+            const r = await api('/api/quote', {
+                method: 'POST',
+                body: JSON.stringify({ line })
+            });
+            if (r?.success) {
+                toast('语录已添加', 'success');
+                loadQuote();
+            } else {
+                toast(r?.error || '添加失败', 'error');
+            }
+        }
+
+        function updateQuoteInterval() {
+            const input = document.getElementById('quote-interval-input');
+            if (!input) return;
+            const minutes = Math.max(1, parseInt(input.value || '5', 10));
+            input.value = minutes;
+            localStorage.setItem('quote_refresh_minutes', minutes);
+            if (quoteTimer) clearInterval(quoteTimer);
+            quoteTimer = setInterval(loadQuote, minutes * 60 * 1000);
+        }
+
+        function initQuote() {
+            const input = document.getElementById('quote-interval-input');
+            const saved = parseInt(localStorage.getItem('quote_refresh_minutes') || '5', 10);
+            if (input) {
+                input.value = isNaN(saved) ? 5 : saved;
+                input.addEventListener('change', updateQuoteInterval);
+            }
+            initQuoteFontSizes();
+            loadQuote();
+            updateQuoteInterval();
+        }
+
+        function initPricingInputs() {
+            ['pricing-input', 'pricing-output', 'pricing-cache'].forEach((id) => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                input.addEventListener('input', () => { pricingDirty = true; });
+                input.addEventListener('change', () => { pricingDirty = true; });
+            });
+        }
+
+        // 从面板后端获取模型列表
+        async function loadModelsFromAPI() {
+            if (inflight.loadModelsFromAPI) return;
+            inflight.loadModelsFromAPI = true;
+            const list = document.getElementById('model-list');
+            const count = document.getElementById('model-count');
+            const headerModels = document.getElementById('header-models');
+
+            list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</div>';
+
+            try {
+                const data = await api('/api/models');
+
+                if (data && data.success && data.models && data.models.length > 0) {
+                    const models = data.models;
+                    count.textContent = `共 ${models.length} 个模型`;
+                    headerModels.textContent = models.length;
+
+                    const groups = {
+                        Gemini: [],
+                        GPT: [],
+                        Claude: [],
+                        Qwen: [],
+                        其他: [],
+                    };
+
+                    models.forEach(m => {
+                        const id = (m.id || m.name || 'unknown');
+                        const lower = id.toLowerCase();
+                        if (lower.includes('gemini')) groups.Gemini.push(m);
+                        else if (lower.includes('gpt')) groups.GPT.push(m);
+                        else if (lower.includes('claude')) groups.Claude.push(m);
+                        else if (lower.includes('qwen')) groups.Qwen.push(m);
+                        else groups.其他.push(m);
+                    });
+
+                    list.innerHTML = Object.entries(groups).map(([groupName, items]) => {
+                        if (!items.length) return '';
+                        const itemsHtml = items.map(m => `
+                            <div class="model-item">
+                                <div>
+                                    <div class="model-name">${escapeHtml(m.id || m.name || 'unknown')}</div>
+                                    <div class="model-provider">Owner: ${escapeHtml(m.owned_by || m.provider || 'unknown')}</div>
+                                </div>
+                                <span class="badge info">${m.object || 'model'}</span>
+                            </div>
+                        `).join('');
+                        return `
+                            <details class="model-group" open>
+                                <summary>${groupName}（${items.length}）</summary>
+                                <div class="model-group-list">${itemsHtml}</div>
+                            </details>
+                        `;
+                    }).join('');
+                } else {
+                    list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">未找到模型</div>';
+                    count.textContent = '共 0 个模型';
+                    headerModels.textContent = '0';
+                }
+            } catch (e) {
+                console.error('获取模型失败:', e);
+                list.innerHTML = '<div style="text-align:center;color:var(--danger);padding:20px;">获取模型失败</div>';
+                count.textContent = '共 0 个模型';
+                headerModels.textContent = '0';
+            } finally {
+                inflight.loadModelsFromAPI = false;
+            }
+        }
+
+        // 状态刷新
+        async function refreshStatus() {
+            if (inflight.refreshStatus) return;
+            inflight.refreshStatus = true;
+            const d = await api('/api/status');
+            if (!d) { inflight.refreshStatus = false; return; }
+
+            const running = d.service.running;
+
+            const statusBadge = document.getElementById('health-service-status');
+            if (statusBadge) {
+                statusBadge.className = `badge ${running ? 'success' : 'danger'}`;
+                statusBadge.innerHTML = `<span class="badge-dot"></span>${running ? '运行中' : '已停止'}`;
+            }
+            const pidEl = document.getElementById('health-service-pid');
+            if (pidEl) pidEl.textContent = d.service.pid || '-';
+            const uptimeEl = document.getElementById('health-service-uptime');
+            if (uptimeEl) uptimeEl.textContent = d.service.uptime || '-';
+
+            // Header
+            document.getElementById('header-status').textContent = running ? '运行中' : '已停止';
+            document.getElementById('header-status-dot').className = 'header-stat-dot ' + (running ? 'green' : 'red');
+            document.getElementById('header-version').textContent = d.version.current;
+            document.getElementById('header-requests').textContent = d.requests.count;
+
+            const healthDot = document.getElementById('header-health-dot');
+            const healthColors = { healthy: 'green', degraded: 'orange', unhealthy: 'red' };
+            healthDot.className = 'header-stat-dot ' + (healthColors[d.health] || 'blue');
+            document.getElementById('header-health').textContent = d.health === 'healthy' ? '正常' : d.health === 'degraded' ? '警告' : d.health === 'unhealthy' ? '异常' : d.health;
+
+            // 版本
+            document.getElementById('current-ver').textContent = d.version.current;
+            document.getElementById('latest-ver').textContent = d.version.latest;
+
+            // 更新横幅
+            if (d.version.has_update) {
+                document.getElementById('update-banner').classList.add('show');
+                document.getElementById('banner-current').textContent = d.version.current;
+                document.getElementById('banner-latest').textContent = d.version.latest;
+            } else {
+                document.getElementById('update-banner').classList.remove('show');
+            }
+
+            // 请求统计
+            document.getElementById('req-count').textContent = d.requests.count;
+            const reqSuccess = document.getElementById('req-success');
+            if (reqSuccess) reqSuccess.textContent = d.requests.success || 0;
+            const reqFailed = document.getElementById('req-failed');
+            if (reqFailed) reqFailed.textContent = d.requests.failed || 0;
+            const idleEl = document.getElementById('idle-status');
+            if (idleEl) {
+                idleEl.className = 'badge ' + (d.requests.is_idle ? 'info' : 'warning');
+                idleEl.textContent = d.requests.is_idle ? '空闲中' : '处理中';
+            }
+
+            const inputTokens = d.requests.input_tokens || 0;
+            const outputTokens = d.requests.output_tokens || 0;
+            const cacheTokens = d.requests.cached_tokens || 0;
+            const totalTokens = d.requests.total_tokens || (inputTokens + outputTokens + cacheTokens);
+            document.getElementById('req-input-tokens').innerHTML = `输入：${formatMillionTokens(inputTokens)}`;
+            document.getElementById('req-output-tokens').innerHTML = `输出：${formatMillionTokens(outputTokens)}`;
+            document.getElementById('req-cache-tokens').innerHTML = `缓存：${formatMillionTokens(cacheTokens)}`;
+            document.getElementById('req-total-tokens').textContent = formatMillionShort(totalTokens);
+
+            if (d.usage_costs) {
+                document.getElementById('req-input-cost').innerHTML = formatUsd(d.usage_costs.input || 0);
+                document.getElementById('req-output-cost').innerHTML = formatUsd(d.usage_costs.output || 0);
+                document.getElementById('req-cache-cost').innerHTML = formatUsd(d.usage_costs.cache || 0);
+                document.getElementById('req-total-cost').textContent = formatUsdShort(d.usage_costs.total || 0);
+            }
+
+            applySummarySizing(document.getElementById('req-count'));
+            applySummarySizing(document.getElementById('req-total-tokens'));
+            applySummarySizing(document.getElementById('req-total-cost'));
+
+            if (d.pricing) {
+                if (!pricingDirty) {
+                    setPricingValue('pricing-input', d.pricing.input);
+                    setPricingValue('pricing-output', d.pricing.output);
+                    setPricingValue('pricing-cache', d.pricing.cache);
+                }
+                pricingInitialized = true;
+            }
+
+            // 自动更新开关
+            const sw = document.getElementById('auto-switch');
+            const label = document.getElementById('auto-label');
+            if (d.update.auto_enabled) { sw.classList.add('on'); label.textContent = '已开启'; }
+            else { sw.classList.remove('on'); label.textContent = '已关闭'; }
+            document.getElementById('idle-input').value = Math.round(d.config.idle_threshold / 60);
+            // 检查间隔 (如果后端支持)
+            if (d.config.check_interval) {
+                document.getElementById('check-interval-input').value = Math.round(d.config.check_interval / 60);
+            }
+
+            // 健康状态
+            document.getElementById('health-overall').textContent = d.health === 'healthy' ? '健康' : d.health === 'degraded' ? '警告' : d.health === 'unhealthy' ? '异常' : d.health;
+
+            inflight.refreshStatus = false;
+        }
+
+        async function refreshResources() {
+            if (inflight.refreshResources) return;
+            inflight.refreshResources = true;
+            const d = await api('/api/resources');
+            if (!d || d.error) { inflight.refreshResources = false; return; }
+
+            // CPU
+            document.getElementById('cpu-percent').textContent = d.cpu.percent.toFixed(1) + '%';
+            document.getElementById('cpu-bar').style.width = d.cpu.percent + '%';
+            document.getElementById('cpu-bar').className = 'progress-fill ' + (d.cpu.percent > 80 ? 'red' : d.cpu.percent > 60 ? 'orange' : 'blue');
+
+            // CPU详细信息
+            const cpuFreq = d.cpu.freq_current ? Math.round(d.cpu.freq_current) + ' MHz' : '-';
+            document.getElementById('cpu-detail').textContent = `${d.cpu.cores || '-'} 核心 | ${cpuFreq}`;
+            document.getElementById('cpu-load-1m').textContent = (d.cpu.load_1m || 0).toFixed(2);
+            document.getElementById('cpu-load-5m').textContent = (d.cpu.load_5m || 0).toFixed(2);
+            document.getElementById('cpu-load-15m').textContent = (d.cpu.load_15m || 0).toFixed(2);
+
+            if (d.system) {
+                document.getElementById('cpu-model').textContent = `CPU 型号：${d.system.cpu_model || '-'}`;
+                document.getElementById('cloud-vendor').textContent = `云厂商：${d.system.cloud_vendor || '-'}`;
+                document.getElementById('os-version').textContent = `系统版本：${d.system.os_version || '-'}`;
+            }
+
+            // 内存
+            const memUsed = (d.memory.used / 1024 / 1024 / 1024).toFixed(2);
+            const memTotal = (d.memory.total / 1024 / 1024 / 1024).toFixed(2);
+            document.getElementById('mem-percent').textContent = d.memory.percent.toFixed(1) + '%';
+            document.getElementById('mem-detail').textContent = `${memUsed} GB / ${memTotal} GB`;
+            document.getElementById('mem-bar').style.width = d.memory.percent + '%';
+            document.getElementById('mem-bar').className = 'progress-fill ' + (d.memory.percent > 80 ? 'red' : d.memory.percent > 60 ? 'orange' : 'purple');
+
+            // 内存详细信息
+            const memAvail = (d.memory.available / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+            const memCached = d.memory.cached ? ((d.memory.cached / 1024 / 1024 / 1024).toFixed(2) + ' GB') : '-';
+            const swapPercent = d.memory.swap_percent || 0;
+            const swapTotal = d.memory.swap_total || 0;
+            const swapTotalGB = (swapTotal / 1024 / 1024 / 1024).toFixed(2);
+            document.getElementById('mem-available').textContent = memAvail;
+            document.getElementById('mem-cached').textContent = memCached;
+            document.getElementById('mem-swap').textContent = swapTotal === 0 ? '未配置' : `${swapPercent.toFixed(1)}% / ${swapTotalGB} GB`;
+
+            if (d.cliproxy) {
+                const clipCpu = d.cliproxy.cpu_percent || 0;
+                const clipMem = d.cliproxy.memory_bytes || 0;
+                document.getElementById('cliproxy-cpu').textContent = `${clipCpu.toFixed(1)}%`;
+                document.getElementById('cliproxy-mem').textContent = `${(clipMem / 1024 / 1024).toFixed(1)} MB`;
+            }
+
+            // 磁盘
+            const diskUsed = (d.disk.used / 1024 / 1024 / 1024).toFixed(1);
+            const diskTotal = (d.disk.total / 1024 / 1024 / 1024).toFixed(1);
+            document.getElementById('disk-percent').textContent = d.disk.percent.toFixed(1) + '%';
+            document.getElementById('disk-detail').textContent = `${diskUsed}GB / ${diskTotal}GB (${d.disk.path || '/'})`;
+            document.getElementById('disk-bar').style.width = d.disk.percent + '%';
+            document.getElementById('disk-bar').className = 'progress-fill ' + (d.disk.percent > 80 ? 'red' : d.disk.percent > 60 ? 'orange' : 'orange');
+
+            inflight.refreshResources = false;
+        }
+
+        async function clearStats() {
+            if (!confirm('确定要清空所有请求统计数据吗？')) return;
+            const r = await api('/api/stats/clear', { method: 'POST' });
+            if (r?.success) {
+                toast('统计数据已清空', 'success');
+                refreshStatus();
+            } else {
+                toast('清空失败: ' + (r?.message || '未知错误'), 'error');
+            }
+        }
+
+        async function savePricing() {
+            const input = parseFloat(document.getElementById('pricing-input').value || '0');
+            const output = parseFloat(document.getElementById('pricing-output').value || '0');
+            const cachePrice = parseFloat(document.getElementById('pricing-cache').value || '0');
+            const r = await api('/api/pricing', {
+                method: 'POST',
+                body: JSON.stringify({ input, output, cache: cachePrice })
+            });
+            if (r?.success) {
+                pricingDirty = false;
+                pricingInitialized = true;
+                const pricing = r.pricing || { input, output, cache: cachePrice };
+                setPricingValue('pricing-input', pricing.input, true);
+                setPricingValue('pricing-output', pricing.output, true);
+                setPricingValue('pricing-cache', pricing.cache, true);
+                toast('价格已保存', 'success');
+                refreshStatus();
+            } else {
+                toast('保存失败', 'error');
+            }
+        }
+
+        async function runHealthCheck() {
+            if (inflight.runHealthCheck) return;
+            inflight.runHealthCheck = true;
+            const d = await api('/api/health');
+            if (!d) { inflight.runHealthCheck = false; return; }
+
+            document.getElementById('health-overall').textContent = d.overall === 'healthy' ? '健康' : d.overall === 'degraded' ? '警告' : '异常';
+
+            const renderHealthItems = (checksMap) => {
+                const container = document.getElementById('health-details');
+                if (!container || !checksMap) return;
+
+                const getIcon = (status) => {
+                    if (status === 'pass') return { cls: 'pass', symbol: '✓' };
+                    if (status === 'warn') return { cls: 'warn', symbol: '!' };
+                    return { cls: 'fail', symbol: '✗' };
+                };
+
+                const labelMap = {
+                    service: '服务进程',
+                    config: '配置文件',
+                    disk: '磁盘空间',
+                    memory: '内存使用',
+                    auth: '认证文件',
+                    api_port: 'API端口'
+                };
+
+                const order = ['service', 'config', 'disk', 'memory', 'auth', 'api_port'];
+                const keys = Object.keys(checksMap);
+                const ordered = order.filter(k => keys.includes(k)).concat(keys.filter(k => !order.includes(k)));
+
+                container.innerHTML = ordered.map((key) => {
+                    const check = checksMap[key];
+                    if (!check) return '';
+                    const icon = getIcon(check.status);
+                    const label = escapeHtml(labelMap[key] || check.name || key);
+                    const color = check.status === 'pass' ? 'var(--success)' : check.status === 'warn' ? 'var(--warning)' : 'var(--danger)';
+                    const title = escapeHtml(check.message || (check.status === 'pass' ? '正常' : '异常'));
+                    return `
+                        <div class="health-item" title="${title}">
+                            <span class="health-name">${label}</span>
+                            <span class="health-mark" style="color:${color}">${icon.symbol}</span>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            // 优先使用后端 checks_map
+            if (d.checks_map) {
+                renderHealthItems(d.checks_map);
+                inflight.runHealthCheck = false;
+                return;
+            }
+
+            // 兼容旧结构：从 checks 数组生成
+            if (Array.isArray(d.checks)) {
+                const fallbackMap = {};
+                d.checks.forEach((check) => {
+                    if (!check || !check.name) return;
+                    const nameKey = check.name;
+                    if (nameKey.includes('服务')) fallbackMap.service = check;
+                    else if (nameKey.includes('配置')) fallbackMap.config = check;
+                    else if (nameKey.includes('磁盘')) fallbackMap.disk = check;
+                    else if (nameKey.includes('内存')) fallbackMap.memory = check;
+                    else if (nameKey.includes('认证')) fallbackMap.auth = check;
+                    else if (nameKey.includes('API') || nameKey.includes('端口')) fallbackMap.api_port = check;
+                });
+                if (Object.keys(fallbackMap).length > 0) {
+                    renderHealthItems(fallbackMap);
+                }
+            }
+
+            inflight.runHealthCheck = false;
+        }
+
+        function clearLogDisplay() {
+            if (!confirm('确定要清空日志文件吗？')) return;
+            api('/api/cliproxy-logs/clear', { method: 'POST' }).then((r) => {
+                if (r && r.success) {
+                    document.getElementById('cli-logs').innerHTML = '<div class="log-entry"><span class="log-msg">日志已清空</span></div>';
+                    toast(r.message || '日志已清空', 'success');
+                } else {
+                    toast('清空失败: ' + (r?.message || '未知错误'), 'error');
+                }
+            });
+        }
+
+        // 解析服务器时间并转换为本地时间
+        function parseServerTime(timeStr) {
+            if (!timeStr) return new Date();
+            // 服务器返回UTC时间（带Z后缀），浏览器会自动转换为本地时间
+            let date = new Date(timeStr);
+            if (!isNaN(date.getTime())) return date;
+            return new Date();
+        }
+
+        async function refreshCliLogs() {
+            if (inflight.refreshCliLogs) return;
+            inflight.refreshCliLogs = true;
+            const d = await api('/api/cliproxy-logs');
+            const el = document.getElementById('cli-logs');
+            if (!d || !d.logs || !d.logs.length) {
+                el.innerHTML = '<div class="log-entry"><span class="log-msg">暂无日志</span></div>';
+                inflight.refreshCliLogs = false;
+                return;
+            }
+
+            el.innerHTML = d.logs.slice(-30).map(l => {
+                // 解析状态码来决定颜色
+                let logClass = '';
+                let statusHtml = '';
+                const statusMatch = l.message.match(/\b([1-5]\d{2})\b/);
+                if (statusMatch) {
+                    const code = parseInt(statusMatch[1]);
+                    if (code >= 200 && code < 300) {
+                        logClass = 'log-success';
+                        statusHtml = `<span class="log-status">[${code}]</span> `;
+                    } else if (code >= 400) {
+                        logClass = 'log-error';
+                        statusHtml = `<span class="log-status">[${code}]</span> `;
+                    } else if (code >= 300) {
+                        logClass = 'log-warning';
+                        statusHtml = `<span class="log-status">[${code}]</span> `;
+                    }
+                }
+                // 检查是否有错误关键词
+                if (!logClass && /error|fail|panic|fatal/i.test(l.message)) {
+                    logClass = 'log-error';
+                } else if (!logClass && /warn|warning/i.test(l.message)) {
+                    logClass = 'log-warning';
+                }
+
+                const localTime = parseServerTime(l.time);
+                return `<div class="log-entry ${logClass}"><span class="log-time">${localTime.toLocaleTimeString()}</span>${statusHtml}<span class="log-msg">${escapeHtml(l.message)}</span></div>`;
+            }).join('');
+            el.scrollTop = el.scrollHeight;
+            inflight.refreshCliLogs = false;
+        }
+
+        async function getRouting() {
+            const d = await api('/api/config/routing');
+            if (d && d.success) {
+                document.getElementById('current-routing').textContent = d.strategy;
+                document.getElementById('routing-select').value = d.strategy;
+            }
+        }
+
+        function escapeHtml(t) {
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+
+        function refreshAll() {
+            refreshStatus();
+            refreshCliLogs();
+            refreshResources();
+            getRouting();
+            loadModelsFromAPI();
+            refreshUpdateHistory();
+        }
+
+        // 获取更新历史
+        async function refreshUpdateHistory() {
+            if (inflight.refreshUpdateHistory) return;
+            inflight.refreshUpdateHistory = true;
+            const d = await api('/api/update-history');
+            if (!d || !d.success) {
+                document.getElementById('last-update-time').textContent = '上次更新: 暂无记录';
+                document.getElementById('recent-updates').innerHTML = '';
+                inflight.refreshUpdateHistory = false;
+                return;
+            }
+
+            const history = d.history || [];
+            if (history.length === 0) {
+                document.getElementById('last-update-time').textContent = '上次更新: 暂无记录';
+                document.getElementById('recent-updates').innerHTML = '';
+                inflight.refreshUpdateHistory = false;
+                return;
+            }
+
+            // 显示上次更新时间
+            const lastUpdate = history[history.length - 1];
+            const hoursAgo = lastUpdate.hours_ago;
+            let timeStr;
+            if (hoursAgo === null) {
+                timeStr = '-';
+            } else if (hoursAgo < 1) {
+                timeStr = Math.round(hoursAgo * 60) + ' 分钟前';
+            } else if (hoursAgo < 24) {
+                timeStr = hoursAgo.toFixed(1) + ' 小时前';
+            } else {
+                timeStr = (hoursAgo / 24).toFixed(1) + ' 天前';
+            }
+            document.getElementById('last-update-time').textContent = `上次更新: ${timeStr} (${lastUpdate.version})`;
+
+            // 显示最近三次更新
+            const recent = history.slice(-3).reverse();
+            if (recent.length > 1) {
+                const recentHtml = recent.slice(1).map((u, i) => {
+                    let t;
+                    if (u.hours_ago === null) t = '-';
+                    else if (u.hours_ago < 1) t = Math.round(u.hours_ago * 60) + '分钟前';
+                    else if (u.hours_ago < 24) t = u.hours_ago.toFixed(1) + '小时前';
+                    else t = (u.hours_ago / 24).toFixed(1) + '天前';
+                    return `<span style="margin-right:8px;">${u.version}: ${t}</span>`;
+                }).join('');
+                document.getElementById('recent-updates').innerHTML = '历史: ' + recentHtml;
+            } else {
+                document.getElementById('recent-updates').innerHTML = '';
+            }
+
+            inflight.refreshUpdateHistory = false;
+        }
+
+        // 操作函数
+        async function serviceAction(action) {
+            const labels = { start: '启动', stop: '停止', restart: '重启' };
+            const r = await api(`/api/service/${action}`, { method: 'POST' });
+            toast(r?.success ? `${labels[action]}成功` : `${labels[action]}失败`, r?.success ? 'success' : 'error');
+            refreshStatus();
+        }
+
+        async function checkUpdate() {
+            const r = await api('/api/check-update');
+            toast(r?.has_update ? `发现新版本: ${r.latest}` : '已是最新版本', r?.has_update ? 'warning' : 'success');
+            refreshStatus();
+        }
+
+        async function triggerUpdate(force) {
+            const r = await api('/api/update', { method: 'POST', body: JSON.stringify({ force }) });
+            toast(r?.message || '更新请求已发送', r?.success ? 'success' : 'warning');
+            setTimeout(refreshStatus, 3000);
+        }
+
+        async function toggleAutoUpdate() {
+            const sw = document.getElementById('auto-switch');
+            const on = sw.classList.contains('on');
+            const r = await api('/api/config/auto-update', { method: 'POST', body: JSON.stringify({ enabled: !on }) });
+            if (r?.success) {
+                sw.classList.toggle('on');
+                document.getElementById('auto-label').textContent = sw.classList.contains('on') ? '已开启' : '已关闭';
+            }
+        }
+
+        async function saveUpdateSettings() {
+            const idleMinutes = parseInt(document.getElementById('idle-input').value);
+            const checkMinutes = parseInt(document.getElementById('check-interval-input').value);
+
+            if (isNaN(idleMinutes) || idleMinutes < 1) {
+                toast('空闲阈值必须大于等于1分钟', 'error');
+                return;
+            }
+            if (isNaN(checkMinutes) || checkMinutes < 1) {
+                toast('检查间隔必须大于等于1分钟', 'error');
+                return;
+            }
+
+            const idleSeconds = idleMinutes * 60;
+            const checkSeconds = checkMinutes * 60;
+
+            // 保存空闲阈值
+            const r1 = await api('/api/config/idle-threshold', {
+                method: 'POST',
+                body: JSON.stringify({ threshold: idleSeconds })
+            });
+
+            // 保存检查间隔
+            const r2 = await api('/api/config/check-interval', {
+                method: 'POST',
+                body: JSON.stringify({ interval: checkSeconds })
+            });
+
+            const idleSaved = r1?.success;
+            const checkSaved = r2?.success;
+
+            if (idleSaved && typeof r1?.idle_threshold === 'number') {
+                document.getElementById('idle-input').value = Math.round(r1.idle_threshold / 60);
+            }
+            if (checkSaved && typeof r2?.check_interval === 'number') {
+                document.getElementById('check-interval-input').value = Math.round(r2.check_interval / 60);
+            }
+
+            if (idleSaved && checkSaved) {
+                toast('设置已保存', 'success');
+            } else if (idleSaved || checkSaved) {
+                const reason = (!idleSaved ? (r1?.error || r1?.message || '空闲阈值保存失败') : '')
+                    + (!checkSaved ? ((idleSaved ? '；' : '') + (r2?.error || r2?.message || '检查间隔保存失败')) : '');
+                toast('部分设置已保存: ' + reason, 'warning');
+            } else {
+                toast('保存失败: ' + (r1?.error || r2?.error || r1?.message || r2?.message || '未知错误'), 'error');
+            }
+
+            refreshStatus();
+        }
+
+        async function setRouting() {
+            const strategy = document.getElementById('routing-select').value;
+            const r = await api('/api/config/routing', { method: 'POST', body: JSON.stringify({ strategy }) });
+            toast(r?.success ? r.message : '设置失败', r?.success ? 'success' : 'error');
+            getRouting();
+        }
+
+        async function reloadConfig() {
+            const r = await api('/api/config/reload', { method: 'POST' });
+            toast(r?.success ? r.message : '重载失败: ' + (r?.message || r?.error), r?.success ? 'success' : 'error');
+            refreshStatus();
+        }
+
+        async function validateConfig() {
+            const r = await api('/api/config/validate', { method: 'POST', body: JSON.stringify({}) });
+            showValidateResult(r);
+        }
+
+        async function validateConfigContent() {
+            const content = document.getElementById('config-editor').value;
+            const r = await api('/api/config/validate', { method: 'POST', body: JSON.stringify({ content }) });
+            showValidateResult(r);
+        }
+
+        function showValidateResult(r) {
+            const el = document.getElementById('validate-result');
+            if (!r) {
+                el.innerHTML = '<div style="color:var(--danger);">验证请求失败</div>';
+            } else if (r.valid) {
+                el.innerHTML = `<div style="color:var(--success);font-size:18px;text-align:center;padding:20px;">✓ 配置格式有效</div>` +
+                    (r.warnings.length ? `<div style="margin-top:10px;"><div style="color:var(--warning);font-weight:600;">警告:</div>${r.warnings.map(w => `<div style="font-size:12px;margin-top:4px;">• ${w}</div>`).join('')}</div>` : '');
+            } else {
+                el.innerHTML = `<div style="color:var(--danger);font-size:18px;text-align:center;padding:20px;">✗ 配置格式无效</div>` +
+                    `<div style="margin-top:10px;"><div style="color:var(--danger);font-weight:600;">错误:</div>${r.errors.map(e => `<div style="font-size:12px;margin-top:4px;">• ${e}</div>`).join('')}</div>`;
+            }
+            document.getElementById('validate-modal').classList.add('active');
+        }
+
+        function closeValidateModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('validate-modal').classList.remove('active');
+        }
+
+        function exportData(type) {
+            window.location.href = API + '/api/export/' + type;
+        }
+
+        async function loadConfig() {
+            const r = await api('/api/config');
+            if (r?.success) {
+                document.getElementById('config-editor').value = r.content;
+                document.getElementById('config-modal').classList.add('active');
+            } else {
+                toast('加载配置失败', 'error');
+            }
+        }
+
+        async function saveConfig() {
+            const content = document.getElementById('config-editor').value;
+            if (!content.trim()) { toast('配置内容为空', 'error'); return; }
+            const r = await api('/api/config', { method: 'POST', body: JSON.stringify({ content }) });
+            toast(r?.success ? '保存成功，请重载配置' : '保存失败', r?.success ? 'success' : 'error');
+            if (r?.success) closeModal();
+        }
+
+        function closeModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('config-modal').classList.remove('active');
+        }
+
+        // Toast
+        function toast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = 'toast ' + type;
+            t.textContent = msg;
+            document.body.appendChild(t);
+            requestAnimationFrame(() => t.classList.add('show'));
+            setTimeout(() => {
+                t.classList.remove('show');
+                setTimeout(() => t.remove(), 200);
+            }, 3000);
+        }
+
+        // 初始化
+        initTheme();
+        initQuote();
+        initPricingInputs();
+        refreshAll();
+        // 每5秒刷新一次状态和资源监控
+        setInterval(() => {
+            refreshStatus();
+            refreshResources();
+        }, 5000);
+        // 每10秒刷新日志
+        setInterval(refreshCliLogs, 10000);
+        // 每60秒刷新模型列表
+        setInterval(loadModelsFromAPI, 60000);
+    </script>
+</body>
+</html>
