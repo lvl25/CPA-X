@@ -26,13 +26,8 @@
         '→ 最新:': { en: '\u2192 Latest:', vi: '\u2192 Mới nhất:' },
         '立即更新': { en: 'Update Now', vi: 'Cập nhật ngay' },
 
-        // ---- Quote Card ----
-        '名人语录': { en: 'Famous Quotes', vi: 'Danh ngôn' },
-        '随机语录': { en: 'Random Quotes', vi: 'Ngẫu nhiên' },
-        '刷新间隔': { en: 'Interval', vi: 'Chu kỳ' },
-        '分钟': { en: 'min', vi: 'phút' },
-        '换一条': { en: 'Next', vi: 'Tiếp' },
-        '添加': { en: 'Add', vi: 'Thêm' },
+
+
 
         // ---- Request Stats Card ----
         '请求统计': { en: 'Request Stats', vi: 'Thống kê yêu cầu' },
@@ -65,12 +60,8 @@
         '当前计费输入：-；缓存命中：-': { en: 'Current billing input: -; Cache hit: -', vi: 'Chi phí nhập hiện tại: -; Bộ đệm: -' },
         '清空统计': { en: 'Clear Stats', vi: 'Xóa thống kê' },
 
-        // ---- Models Card ----
-        '可用模型': { en: 'Available Models', vi: 'Mô hình khả dụng' },
-        '加载中...': { en: 'Loading...', vi: 'Đang tải...' },
-        '未找到模型': { en: 'No models found', vi: 'Không tìm thấy mô hình' },
-        '获取模型失败': { en: 'Failed to load models', vi: 'Tải mô hình thất bại' },
-        '其他': { en: 'Other', vi: 'Khác' },
+
+
 
         // ---- Health Card ----
         '健康状态': { en: 'Health Status', vi: 'Trạng thái hệ thống' },
@@ -141,20 +132,8 @@
         '验证配置': { en: 'Validate Config', vi: 'Kiểm tra cấu hình' },
         '重载配置': { en: 'Reload Config', vi: 'Tải lại cấu hình' },
 
-        // ---- CPU Card ----
-        'CPU 使用率': { en: 'CPU Usage', vi: 'Sử dụng CPU' },
-        '1分钟': { en: '1 min', vi: '1 phút' },
-        '5分钟': { en: '5 min', vi: '5 phút' },
-        '15分钟': { en: '15 min', vi: '15 phút' },
 
-        // ---- Memory Card ----
-        '内存使用率': { en: 'Memory Usage', vi: 'Sử dụng bộ nhớ' },
-        '可用': { en: 'Available', vi: 'Khả dụng' },
-        'cliproxy 内存': { en: 'cliproxy Mem', vi: 'cliproxy RAM' },
-        '未配置': { en: 'Not configured', vi: 'Chưa cấu hình' },
 
-        // ---- Disk Card ----
-        '磁盘使用率': { en: 'Disk Usage', vi: 'Sử dụng đĩa' },
 
         // ---- Export Card ----
         '数据导出': { en: 'Data Export', vi: 'Xuất dữ liệu' },
@@ -190,7 +169,7 @@
         '统计数据已清空': { en: 'Stats cleared', vi: 'Đã xóa thống kê' },
         '价格已保存': { en: 'Pricing saved', vi: 'Đã lưu giá' },
         '保存失败': { en: 'Save failed', vi: 'Lưu thất bại' },
-        '语录已添加': { en: 'Quote added', vi: 'Đã thêm danh ngôn' },
+
         '添加失败': { en: 'Add failed', vi: 'Thêm thất bại' },
         '加载配置失败': { en: 'Failed to load config', vi: 'Tải cấu hình thất bại' },
         '配置内容为空': { en: 'Config content is empty', vi: 'Nội dung cấu hình trống' },
@@ -208,8 +187,8 @@
         '确定要清空所有请求统计数据吗？': { en: 'Clear all request statistics?', vi: 'Xóa toàn bộ thống kê yêu cầu?' },
         '确定要清空日志文件吗？': { en: 'Clear log file?', vi: 'Xóa tệp nhật ký?' },
 
-        // ---- Prompt dialogs ----
-        '请输入语录（格式：内容 出自：作者）': { en: 'Enter quote (format: content by: author)', vi: 'Nhập danh ngôn (định dạng: nội dung từ: tác giả)' },
+
+
 
         // ---- Service action toasts ----
         '启动成功': { en: 'Started successfully', vi: 'Khởi động thành công' },
@@ -256,8 +235,8 @@
         '端口必须是1-65535之间的整数': { en: 'Port must be integer between 1-65535', vi: 'Cổng phải là số nguyên từ 1-65535' },
         'providers必须是一个数组': { en: 'providers must be an array', vi: 'providers phải là mảng' },
 
-        // ---- Quote format error ----
-        '格式错误，请使用"内容 出自：作者"': { en: 'Invalid format. Use "content by: author"', vi: 'Sai định dạng. Dùng "nội dung từ: tác giả"' },
+
+
 
         // ---- Connection test ----
         '外网连接': { en: 'Internet', vi: 'Kết nối mạng' },
@@ -314,11 +293,7 @@
             [/^共 (\d+) 个模型$/, (m) => `${m[1]} models`],
             // Model group with count: 其他（3）
             [/^其他（(\d+)）$/, (m) => `Other (${m[1]})`],
-            // Quote font size buttons
-            [/^语录[：:](\d+) px$/, (m) => `Quote: ${m[1]} px`],
-            [/^作者[：:](\d+) px$/, (m) => `Author: ${m[1]} px`],
-            // Font size prompt
-            [/^请输入(语录|作者)字号\(px\)$/, (m) => `Enter ${m[1] === '语录' ? 'quote' : 'author'} font size (px)`],
+
             // Token labels in stats
             [/^输入[：:]/, () => 'Input: '],
             [/^输出[：:]/, () => 'Output: '],
@@ -399,11 +374,7 @@
             [/^共 (\d+) 个模型$/, (m) => `${m[1]} mô hình`],
             // Model group with count
             [/^其他（(\d+)）$/, (m) => `Khác (${m[1]})`],
-            // Quote font size buttons
-            [/^语录[：:](\d+) px$/, (m) => `Trích: ${m[1]} px`],
-            [/^作者[：:](\d+) px$/, (m) => `Tác giả: ${m[1]} px`],
-            // Font size prompt
-            [/^请输入(语录|作者)字号\(px\)$/, (m) => `Nhập cỡ chữ ${m[1] === '语录' ? 'trích dẫn' : 'tác giả'} (px)`],
+
             // Token labels in stats
             [/^输入[：:]/, () => 'Nhập: '],
             [/^输入（含缓存）[：:]/, () => 'Nhập (gồm bộ đệm): '],
@@ -644,17 +615,8 @@
             };
         }
 
-        // Patch updateQuoteFontButtons
-        if (typeof window.updateQuoteFontButtons === 'function') {
-            const origQFB = window.updateQuoteFontButtons;
-            window.updateQuoteFontButtons = function () {
-                origQFB.call(this);
-                const textBtn = document.getElementById('quote-size-btn');
-                const authorBtn = document.getElementById('quote-author-size-btn');
-                if (textBtn) textBtn.textContent = t(textBtn.textContent);
-                if (authorBtn) authorBtn.textContent = t(authorBtn.textContent);
-            };
-        }
+
+
     }
 
     // ==================== MutationObserver for dynamic content ====================
