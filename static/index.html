@@ -458,6 +458,10 @@
             display: grid;
             gap: 8px;
             margin-top: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.15) transparent;
         }
         .usage-account-row {
             padding: 8px 10px;
@@ -1945,13 +1949,14 @@
         }
 
         function renderUsageAccountBars(bucketPayload) {
+            const t = window.__i18n_t || ((s) => s);
             const container = document.getElementById('usage-account-bars');
             if (!container) return;
 
             const metric = usageAnalyticsState.metric;
             const accounts = Array.isArray(bucketPayload?.accounts) ? [...bucketPayload.accounts] : [];
             if (!accounts.length) {
-                container.innerHTML = '<div class="usage-account-empty">当前范围暂无账号 usage 分布</div>';
+                container.innerHTML = `<div class="usage-account-empty">${t('当前范围暂无账号 usage 分布')}</div>`;
                 return;
             }
 
@@ -1961,9 +1966,9 @@
                 return Number(b?.requests || 0) - Number(a?.requests || 0);
             });
 
-            const top = accounts.filter((item) => Number(item?.[metric] || 0) > 0).slice(0, 8);
+            const top = accounts.filter((item) => Number(item?.[metric] || 0) > 0);
             if (!top.length) {
-                container.innerHTML = '<div class="usage-account-empty">当前指标下暂无账号 usage 分布</div>';
+                container.innerHTML = `<div class="usage-account-empty">${t('当前指标下暂无账号 usage 分布')}</div>`;
                 return;
             }
 
