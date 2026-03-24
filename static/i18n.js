@@ -19,6 +19,7 @@
         '健康': { en: 'Health', vi: 'Sức khỏe' },
         '刷新': { en: 'Refresh', vi: 'Làm mới' },
         '切换主题': { en: 'Toggle theme', vi: 'Chuyển chủ đề' },
+        '列数': { en: 'Columns', vi: 'Số cột' },
 
         // ---- Update Banner ----
         '发现新版本可用！当前:': { en: 'New version available! Current:', vi: 'Có phiên bản mới! Hiện tại:' },
@@ -56,6 +57,13 @@
         '自动同步已关闭': { en: 'auto-sync off', vi: 'đồng bộ tự động đã tắt' },
         '自动同步已开启': { en: 'auto-sync on', vi: 'đồng bộ tự động đã bật' },
         '固定，不随上方 Token 单位切换': { en: 'fixed, does not change with token unit above', vi: 'cố định, không đổi theo đơn vị Token ở trên' },
+        '当前生效价格（美元/百万Tokens）': { en: 'Active Pricing (USD/M Tokens)', vi: 'Giá hiện hành (USD/Triệu Tokens)' },
+        '手动价格设置（输入/输出/缓存）': { en: 'Manual Pricing (Input/Output/Cache)', vi: 'Cài giá thủ công (Nhập/Xuất/Bộ đệm)' },
+        '来源：-': { en: 'Source: -', vi: 'Nguồn: -' },
+        '计价口径：美元/百万Tokens': { en: 'Pricing basis: USD/M Tokens', vi: 'Đơn vị tính giá: USD/Triệu Tokens' },
+        '费用按 美元/百万Tokens 计算': { en: 'Cost calculated in USD/M Tokens', vi: 'Chi phí tính bằng USD/Triệu Tokens' },
+        '当前计费输入：-；缓存命中：-': { en: 'Current billing input: -; Cache hit: -', vi: 'Chi phí nhập hiện tại: -; Bộ đệm: -' },
+        '清空统计': { en: 'Clear Stats', vi: 'Xóa thống kê' },
 
         // ---- Models Card ----
         '可用模型': { en: 'Available Models', vi: 'Mô hình khả dụng' },
@@ -115,6 +123,9 @@
         '检查间隔（检查更新的间隔）': { en: 'Check Interval', vi: 'Chu kỳ kiểm tra' },
         '空闲阈值（多久没有请求日志则检查更新）': { en: 'Idle Threshold (check update when no requests)', vi: 'Ngưỡng rảnh (kiểm tra khi không có yêu cầu)' },
         '保存设置': { en: 'Save Settings', vi: 'Lưu cài đặt' },
+        '当前状态': { en: 'Current Status', vi: 'Trạng thái hiện tại' },
+        '多久检查一次新版本': { en: 'How often to check for updates', vi: 'Tần suất kiểm tra bản mới' },
+        '无请求日志持续多久后才执行更新': { en: 'How long without requests before updating', vi: 'Bao lâu không có yêu cầu thì kiểm tra cập nhật' },
 
         // ---- Routing Card ----
         '路由策略': { en: 'Routing Strategy', vi: 'Chiến lược định tuyến' },
@@ -263,6 +274,37 @@
         '小时': { en: 'h', vi: 'giờ' },
         '天': { en: 'd', vi: 'ngày' },
         '分': { en: 'm', vi: 'phút' },
+        '月': { en: 'month', vi: 'tháng' },
+
+        // ---- Usage History Card ----
+        '使用历史': { en: 'Usage History', vi: 'Lịch sử sử dụng' },
+        '按小时 / 天 / 月查看趋势': { en: 'View trends by hour/day/month', vi: 'Xem xu hướng theo giờ/ngày/tháng' },
+        '按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布': { en: 'View usage trends by hour/day/month with account distribution', vi: 'Xem xu hướng sử dụng theo giờ/ngày/tháng, kèm phân bổ tài khoản' },
+        '趋势图表': { en: 'Trend Chart', vi: 'Biểu đồ xu hướng' },
+        '请求数': { en: 'Requests', vi: 'Số yêu cầu' },
+        '费用': { en: 'Cost', vi: 'Chi phí' },
+        '范围总量': { en: 'Range Total', vi: 'Tổng trong khoảng' },
+        '峰值时段': { en: 'Peak Period', vi: 'Thời điểm cao nhất' },
+        '活跃账号': { en: 'Active Accounts', vi: 'Tài khoản hoạt động' },
+        '账号分布': { en: 'Account Distribution', vi: 'Phân bổ tài khoản' },
+        '正在加载 usage analytics...': { en: 'Loading usage analytics...', vi: 'Đang tải phân tích sử dụng...' },
+        '正在加载账号分布...': { en: 'Loading account distribution...', vi: 'Đang tải phân bổ tài khoản...' },
+        '暂无数据': { en: 'No data', vi: 'Chưa có dữ liệu' },
+        '暂无 usage 数据': { en: 'No usage data', vi: 'Chưa có dữ liệu sử dụng' },
+        '当前范围暂无使用记录': { en: 'No usage records in current range', vi: 'Chưa có bản ghi sử dụng trong khoảng này' },
+        '当前范围暂无账号 usage 分布': { en: 'No account distribution in current range', vi: 'Chưa có phân bổ tài khoản trong khoảng này' },
+        '当前 usage snapshot 未暴露账号维度': { en: 'Current usage snapshot has no account dimension', vi: 'Bản snapshot sử dụng hiện tại không có chiều tài khoản' },
+        '账号维度不可用': { en: 'Account dimension unavailable', vi: 'Chiều tài khoản không khả dụng' },
+        '未能获取 usage analytics。': { en: 'Failed to load usage analytics.', vi: 'Không thể tải phân tích sử dụng.' },
+        '当前范围内的 usage 趋势。': { en: 'Usage trends in current range.', vi: 'Xu hướng sử dụng trong khoảng hiện tại.' },
+
+        // ---- Duration labels (from formatDurationCn) ----
+        '0秒': { en: '0s', vi: '0 giây' },
+
+        // ---- Panel key prompt ----
+        '需要面板密钥（Panel Access Key）。请输入：': { en: 'Panel Access Key required. Please enter:', vi: 'Cần khóa truy cập bảng điều khiển. Vui lòng nhập:' },
+        '需要面板密钥才能访问': { en: 'Panel key required for access', vi: 'Cần khóa truy cập để vào bảng điều khiển' },
+        '面板密钥无效，请重新设置': { en: 'Invalid panel key, please reset', vi: 'Khóa truy cập không hợp lệ, vui lòng đặt lại' },
     };
 
     // ==================== Regex-based patterns for dynamic strings ====================
@@ -334,6 +376,23 @@
             [/^YAML解析错误: (.+)$/, (m) => `YAML parse error: ${m[1]}`],
             // Connection test
             [/^连接失败: (.+)$/, (m) => `Connection failed: ${m[1]}`],
+            // Usage analytics dynamic
+            [/^(\S+)粒度 \| (.+) \| (.+)$/, (m) => {
+                const bucket = {'小时':'Hour','天':'Day','月':'Month'};
+                const metric = {'请求数':'Requests','Tokens':'Tokens','费用':'Cost'};
+                return `${bucket[m[1]]||m[1]} | ${metric[m[2]]||m[2]} | ${m[3]}`;
+            }],
+            [/^更新于 (.+)$/, (m) => `Updated at ${m[1]}`],
+            [/^当前范围内活跃账号 (\d+) 个$/, (m) => `${m[1]} active accounts in range`],
+            [/^费用按当前生效价格计算[：:](.+)$/, (m) => `Cost based on active pricing: ${m[1]}`],
+            [/^当前 usage snapshot 未提供逐条明细.*$/, () => 'Current usage snapshot has no per-item breakdown'],
+            [/^最新 (.+)$/, (m) => `Latest ${m[1]}`],
+            [/^(\d+)分(\d+)秒$/, (m) => `${m[1]}m${m[2]}s`],
+            [/^当前计费输入[：:](.+)；缓存命中[：:](.+)$/, (m) => `Billing input: ${m[1]}; Cache hit: ${m[2]}`],
+            [/^自动更新已(开启|关闭).*$/, (m) => m[1] === '开启' ? 'Auto-update enabled' : 'Auto-update disabled'],
+            [/^下次检查[：:](.+)$/, (m) => `Next check: ${m[1]}`],
+            [/^上次检查[：:](.+)$/, (m) => `Last check: ${m[1]}`],
+            [/^部分 (\S+) 无法映射到 runtime auth metadata.*显示。?$/, (m) => `Some ${m[1]} cannot be mapped to runtime auth metadata, showing raw IDs.`],
         ],
         vi: [
             // Model count
@@ -417,6 +476,28 @@
             [/^YAML解析错误: (.+)$/, (m) => `Lỗi phân tích YAML: ${m[1]}`],
             // Connection test
             [/^连接失败: (.+)$/, (m) => `Kết nối thất bại: ${m[1]}`],
+            // Usage analytics dynamic
+            [/^(\S+)粒度 \| (.+) \| (.+)$/, (m) => {
+                const bucket = {'小时':'Giờ','天':'Ngày','月':'Tháng'};
+                const metric = {'请求数':'Số yêu cầu','Tokens':'Tokens','费用':'Chi phí'};
+                return `${bucket[m[1]]||m[1]} | ${metric[m[2]]||m[2]} | ${m[3]}`;
+            }],
+            [/^更新于 (.+)$/, (m) => `Cập nhật lúc ${m[1]}`],
+            [/^当前范围内活跃账号 (\d+) 个$/, (m) => `${m[1]} tài khoản hoạt động trong khoảng này`],
+            [/^费用按当前生效价格计算[：:](.+)$/, (m) => `Chi phí theo giá hiện hành: ${m[1]}`],
+            [/^当前 usage snapshot 未提供逐条明细.*$/, () => 'Bản snapshot sử dụng hiện tại không có chi tiết từng dòng'],
+            // Usage chart metric labels
+            [/^最新 (.+)$/, (m) => `Mới nhất ${m[1]}`],
+            // formatDurationCn patterns
+            [/^(\d+)分(\d+)秒$/, (m) => `${m[1]} phút ${m[2]} giây`],
+            // Pricing dynamic
+            [/^当前计费输入[：:](.+)；缓存命中[：:](.+)$/, (m) => `Chi phí nhập: ${m[1]}; Bộ đệm: ${m[2]}`],
+            // Auto update status
+            [/^自动更新已(开启|关闭).*$/, (m) => m[1] === '开启' ? 'Tự động cập nhật đã bật' : 'Tự động cập nhật đã tắt'],
+            [/^下次检查[：:](.+)$/, (m) => `Kiểm tra tiếp: ${m[1]}`],
+            [/^上次检查[：:](.+)$/, (m) => `Kiểm tra trước: ${m[1]}`],
+            // Account distribution labels  
+            [/^部分 (\S+) 无法映射到 runtime auth metadata.*显示。?$/, (m) => `Một số ${m[1]} không thể ánh xạ tới runtime auth metadata, hiển thị ID gốc.`],
         ]
     };
 
@@ -489,7 +570,15 @@
             '.log-title', '.modal-title', '.health-name', '.health-pricing-title',
             '.req-summary-label', '.update-banner-text span',
             'option', 'label span', 'summary',
-            '.log-entry .log-msg'
+            '.log-entry .log-msg',
+            '.usage-analytics-subtitle', '.usage-analytics-stamp',
+            '.usage-toggle', '.usage-analytics-pill span', '.usage-analytics-pill strong',
+            '.usage-chart-empty', '.usage-chart-note',
+            '.usage-account-note', '.usage-account-empty',
+            '#pricing-current-title', '#pricing-source-info', '#pricing-basis-info',
+            '#usage-cost-basis-info', '#usage-cost-breakdown-info',
+            '#auto-status-detail', '#auto-status-line',
+            '.col-toggle[title]'
         ];
         document.querySelectorAll(selectors.join(',')).forEach(translateElement);
 
@@ -648,8 +737,7 @@
             }
             // Re-trigger data refresh to translate dynamic content
             if (typeof window.refreshStatus === 'function') window.refreshStatus();
-            if (typeof window.refreshResources === 'function') window.refreshResources();
-            if (typeof window.updateQuoteFontButtons === 'function') window.updateQuoteFontButtons();
+            if (typeof window.loadUsageAnalytics === 'function') window.loadUsageAnalytics(true);
         });
 
         headerActions.insertBefore(select, headerActions.firstChild);
