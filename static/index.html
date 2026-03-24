@@ -235,7 +235,7 @@
         .cards-grid > .card { min-width: 0; width: 100%; align-self: start; }
         .cards-grid.fixed-grid { grid-auto-rows: minmax(var(--grid-row-height, 320px), auto); }
         .cards-grid.fixed-grid > .card { min-height: var(--grid-row-height, 320px); overflow: visible; }
-        .cards-grid.fixed-top { --grid-row-height: 360px; }
+        .cards-grid.fixed-top { --grid-row-height: 360px; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         .cards-grid.fixed-middle { --grid-row-height: 260px; }
         .cards-grid.fixed-bottom { --grid-row-height: 256px; }
 
@@ -1090,91 +1090,56 @@
                     </div>
                 </div>
 
-
-                <!-- 健康状态 -->
-                <div class="card glass health-card">
+                <!-- 使用历史 -->
+                <div class="card glass">
                     <div class="card-header">
-                        <div class="card-icon pink"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
-                        <div>
-                            <div class="card-title">健康状态</div>
-                            <div class="card-subtitle">系统健康检查</div>
+                        <div class="card-icon cyan"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
+                        <div style="flex:1;">
+                            <div class="card-title">使用历史</div>
+                            <div class="card-subtitle">按小时 / 天 / 月查看趋势</div>
+                        </div>
+                        <div class="usage-analytics-stamp" id="usage-analytics-stamp">加载中...</div>
+                    </div>
+                    <div class="usage-analytics-subtitle" id="usage-analytics-subtitle" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布</div>
+                    <div class="usage-toggle-row">
+                        <div class="usage-toggle-group" id="usage-bucket-controls">
+                            <button class="usage-toggle" type="button" data-bucket="hour" onclick="setUsageBucket('hour')">小时</button>
+                            <button class="usage-toggle" type="button" data-bucket="day" onclick="setUsageBucket('day')">天</button>
+                            <button class="usage-toggle" type="button" data-bucket="month" onclick="setUsageBucket('month')">月</button>
+                        </div>
+                        <div class="usage-toggle-group" id="usage-metric-controls">
+                            <button class="usage-toggle" type="button" data-metric="requests" onclick="setUsageMetric('requests')">请求数</button>
+                            <button class="usage-toggle" type="button" data-metric="total_tokens" onclick="setUsageMetric('total_tokens')">Tokens</button>
+                            <button class="usage-toggle" type="button" data-metric="cost" onclick="setUsageMetric('cost')">费用</button>
                         </div>
                     </div>
-                    <div class="health-service-info" style="margin-bottom:6px;">
-                        <div class="info-row"><span class="info-label">状态</span><span class="badge info" id="health-service-status"><span class="badge-dot"></span>-</span></div>
-                        <div class="info-row"><span class="info-label">PID</span><span class="info-value" id="health-service-pid">-</span></div>
-                        <div class="info-row"><span class="info-label">运行时间</span><span class="info-value" id="health-service-uptime">-</span></div>
-                    </div>
-                    <div id="health-summary" style="text-align:center;padding:4px 0;">
-                        <div class="stat-number" style="font-size:20px;" id="health-overall">-</div>
-                        <div class="stat-label">整体状态</div>
-                    </div>
-                    <div id="health-details" class="health-list" style="margin-top:6px;">
-                        <div class="health-item"><span class="health-name">服务进程</span><span class="health-mark" id="health-service">-</span></div>
-                        <div class="health-item"><span class="health-name">配置文件</span><span class="health-mark" id="health-config">-</span></div>
-                        <div class="health-item"><span class="health-name">磁盘空间</span><span class="health-mark" id="health-disk">-</span></div>
-                        <div class="health-item"><span class="health-name">内存使用</span><span class="health-mark" id="health-memory">-</span></div>
-                    </div>
-                    <div class="health-actions">
-                        <div class="btn-group">
-                            <button class="btn btn-success btn-sm" onclick="serviceAction('start')">启动</button>
-                            <button class="btn btn-danger btn-sm" onclick="serviceAction('stop')">停止</button>
-                            <button class="btn btn-warning btn-sm" onclick="serviceAction('restart')">重启</button>
+                    <div class="usage-analytics-metrics">
+                        <div class="usage-analytics-pill">
+                            <span>范围总量</span>
+                            <strong id="usage-range-total">-</strong>
                         </div>
-                        <button class="btn btn-ghost btn-sm" onclick="runHealthCheck()">运行检查</button>
+                        <div class="usage-analytics-pill">
+                            <span>峰值时段</span>
+                            <strong id="usage-range-peak">-</strong>
+                        </div>
+                        <div class="usage-analytics-pill">
+                            <span>活跃账号</span>
+                            <strong id="usage-range-accounts">-</strong>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- 使用历史 -->
-            <div class="card glass" style="width:100%;">
-                <div class="card-header">
-                    <div class="card-icon cyan"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
-                    <div style="flex:1;">
-                        <div class="card-title">使用历史</div>
-                        <div class="card-subtitle">按小时 / 天 / 月查看趋势</div>
+                    <div class="usage-chart-frame">
+                        <svg id="usage-trend-chart" viewBox="0 0 760 240" preserveAspectRatio="none" aria-label="Usage trend chart"></svg>
+                        <div class="usage-chart-tooltip" id="usage-chart-tooltip"></div>
+                        <div class="usage-chart-empty show" id="usage-chart-empty">正在加载 usage analytics...</div>
                     </div>
-                    <div class="usage-analytics-stamp" id="usage-analytics-stamp">加载中...</div>
-                </div>
-                <div class="usage-analytics-subtitle" id="usage-analytics-subtitle" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布</div>
-                <div class="usage-toggle-row">
-                    <div class="usage-toggle-group" id="usage-bucket-controls">
-                        <button class="usage-toggle" type="button" data-bucket="hour" onclick="setUsageBucket('hour')">小时</button>
-                        <button class="usage-toggle" type="button" data-bucket="day" onclick="setUsageBucket('day')">天</button>
-                        <button class="usage-toggle" type="button" data-bucket="month" onclick="setUsageBucket('month')">月</button>
+                    <div class="usage-chart-note" id="usage-chart-note">-</div>
+                    <div class="usage-account-head">
+                        <div class="health-pricing-title">账号分布</div>
+                        <div class="usage-account-note" id="usage-account-note">-</div>
                     </div>
-                    <div class="usage-toggle-group" id="usage-metric-controls">
-                        <button class="usage-toggle" type="button" data-metric="requests" onclick="setUsageMetric('requests')">请求数</button>
-                        <button class="usage-toggle" type="button" data-metric="total_tokens" onclick="setUsageMetric('total_tokens')">Tokens</button>
-                        <button class="usage-toggle" type="button" data-metric="cost" onclick="setUsageMetric('cost')">费用</button>
+                    <div class="usage-account-bars" id="usage-account-bars">
+                        <div class="usage-account-empty">正在加载账号分布...</div>
                     </div>
-                </div>
-                <div class="usage-analytics-metrics">
-                    <div class="usage-analytics-pill">
-                        <span>范围总量</span>
-                        <strong id="usage-range-total">-</strong>
-                    </div>
-                    <div class="usage-analytics-pill">
-                        <span>峰值时段</span>
-                        <strong id="usage-range-peak">-</strong>
-                    </div>
-                    <div class="usage-analytics-pill">
-                        <span>活跃账号</span>
-                        <strong id="usage-range-accounts">-</strong>
-                    </div>
-                </div>
-                <div class="usage-chart-frame">
-                    <svg id="usage-trend-chart" viewBox="0 0 760 240" preserveAspectRatio="none" aria-label="Usage trend chart"></svg>
-                    <div class="usage-chart-tooltip" id="usage-chart-tooltip"></div>
-                    <div class="usage-chart-empty show" id="usage-chart-empty">正在加载 usage analytics...</div>
-                </div>
-                <div class="usage-chart-note" id="usage-chart-note">-</div>
-                <div class="usage-account-head">
-                    <div class="health-pricing-title">账号分布</div>
-                    <div class="usage-account-note" id="usage-account-note">-</div>
-                </div>
-                <div class="usage-account-bars" id="usage-account-bars">
-                    <div class="usage-account-empty">正在加载账号分布...</div>
                 </div>
             </div>
 
@@ -1287,6 +1252,40 @@
                         <button class="btn btn-primary btn-sm" onclick="loadConfig()" style="width:100%;">编辑配置</button>
                         <button class="btn btn-ghost btn-sm" onclick="validateConfig()" style="width:100%;">验证配置</button>
                         <button class="btn btn-warning btn-sm" onclick="reloadConfig()" style="width:100%;">重载配置</button>
+                    </div>
+                </div>
+
+                <!-- 健康状态 -->
+                <div class="card glass health-card">
+                    <div class="card-header">
+                        <div class="card-icon pink"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+                        <div>
+                            <div class="card-title">健康状态</div>
+                            <div class="card-subtitle">系统健康检查</div>
+                        </div>
+                    </div>
+                    <div class="health-service-info" style="margin-bottom:6px;">
+                        <div class="info-row"><span class="info-label">状态</span><span class="badge info" id="health-service-status"><span class="badge-dot"></span>-</span></div>
+                        <div class="info-row"><span class="info-label">PID</span><span class="info-value" id="health-service-pid">-</span></div>
+                        <div class="info-row"><span class="info-label">运行时间</span><span class="info-value" id="health-service-uptime">-</span></div>
+                    </div>
+                    <div id="health-summary" style="text-align:center;padding:4px 0;">
+                        <div class="stat-number" style="font-size:20px;" id="health-overall">-</div>
+                        <div class="stat-label">整体状态</div>
+                    </div>
+                    <div id="health-details" class="health-list" style="margin-top:6px;">
+                        <div class="health-item"><span class="health-name">服务进程</span><span class="health-mark" id="health-service">-</span></div>
+                        <div class="health-item"><span class="health-name">配置文件</span><span class="health-mark" id="health-config">-</span></div>
+                        <div class="health-item"><span class="health-name">磁盘空间</span><span class="health-mark" id="health-disk">-</span></div>
+                        <div class="health-item"><span class="health-name">内存使用</span><span class="health-mark" id="health-memory">-</span></div>
+                    </div>
+                    <div class="health-actions">
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" onclick="serviceAction('start')">启动</button>
+                            <button class="btn btn-danger btn-sm" onclick="serviceAction('stop')">停止</button>
+                            <button class="btn btn-warning btn-sm" onclick="serviceAction('restart')">重启</button>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="runHealthCheck()">运行检查</button>
                     </div>
                 </div>
             </div>
@@ -1701,7 +1700,7 @@
                 const isCost = btn.dataset.metric === 'cost';
                 btn.disabled = isCost && !supportsCost;
                 btn.classList.toggle('active', btn.dataset.metric === usageAnalyticsState.metric);
-                btn.title = isCost && !supportsCost ? '当前 usage snapshot 未提供逐条明细，无法绘制历史费用' : '';
+                btn.title = isCost && !supportsCost ? t('当前 usage snapshot 未提供逐条明细，无法绘制历史费用') : '';
             });
         }
 
@@ -1735,13 +1734,13 @@
             const accountNoteEl = document.getElementById('usage-account-note');
 
             if (!data || !bucketPayload) {
-                if (subtitleEl) subtitleEl.textContent = '按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布';
-                if (stampEl) stampEl.textContent = '暂无数据';
+                if (subtitleEl) subtitleEl.textContent = t('按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布');
+                if (stampEl) stampEl.textContent = t('暂无数据');
                 if (totalEl) totalEl.textContent = '-';
                 if (peakEl) peakEl.textContent = '-';
                 if (accountsEl) accountsEl.textContent = '-';
-                if (noteEl) noteEl.textContent = '未能获取 usage analytics。';
-                if (accountNoteEl) accountNoteEl.textContent = '账号维度不可用';
+                if (noteEl) noteEl.textContent = t('未能获取 usage analytics。');
+                if (accountNoteEl) accountNoteEl.textContent = t('账号维度不可用');
                 renderUsageTrendChart(null);
                 renderUsageAccountBars(null);
                 return;
@@ -1758,10 +1757,10 @@
             }, null);
 
             if (subtitleEl) {
-                subtitleEl.textContent = `${usageBucketMeta[usageAnalyticsState.bucket]?.label || usageAnalyticsState.bucket}粒度 | ${metricLabel} | ${bucketPayload.range_label || ''}`;
+                subtitleEl.textContent = t(`${usageBucketMeta[usageAnalyticsState.bucket]?.label || usageAnalyticsState.bucket}粒度 | ${metricLabel} | ${bucketPayload.range_label || ''}`);
             }
             if (stampEl) {
-                stampEl.textContent = `更新于 ${formatDateTimeCn(data.generated_at)}`;
+                stampEl.textContent = t(`更新于 ${formatDateTimeCn(data.generated_at)}`);
             }
             if (totalEl) {
                 totalEl.textContent = formatUsageMetricPlain(metric, bucketPayload.totals?.[metric] || 0);
@@ -1775,16 +1774,16 @@
 
             const chartNotes = [];
             if (metric === 'cost') {
-                chartNotes.push(`费用按当前生效价格计算：${getPricingBasisText(data)}`);
+                chartNotes.push(t(`费用按当前生效价格计算：${getPricingBasisText(data)}`));
             }
-            (data.meta?.notes || []).forEach((note) => chartNotes.push(note));
+            (data.meta?.notes || []).forEach((note) => chartNotes.push(t(note)));
             if (noteEl) {
-                noteEl.textContent = chartNotes.join('；') || '当前范围内的 usage 趋势。';
+                noteEl.textContent = chartNotes.join('；') || t('当前范围内的 usage 趋势。');
             }
             if (accountNoteEl) {
                 accountNoteEl.textContent = data.meta?.has_account_dimension
-                    ? `当前范围内活跃账号 ${activeAccounts} 个`
-                    : '当前 usage snapshot 未暴露账号维度';
+                    ? t(`当前范围内活跃账号 ${activeAccounts} 个`)
+                    : t('当前 usage snapshot 未暴露账号维度');
             }
 
             renderUsageTrendChart(bucketPayload);
@@ -1800,7 +1799,7 @@
             const points = Array.isArray(bucketPayload?.points) ? bucketPayload.points : [];
             if (!points.length) {
                 svg.innerHTML = '';
-                emptyEl.textContent = '暂无 usage 数据';
+                emptyEl.textContent = t('暂无 usage 数据');
                 emptyEl.classList.add('show');
                 return;
             }
@@ -1810,7 +1809,7 @@
             const maxValue = Math.max(...values, 0);
             if (maxValue <= 0) {
                 svg.innerHTML = '';
-                emptyEl.textContent = '当前范围暂无使用记录';
+                emptyEl.textContent = t('当前范围暂无使用记录');
                 emptyEl.classList.add('show');
                 return;
             }
@@ -1881,8 +1880,8 @@
                 ${crosshair}
                 ${hitZones}
                 ${xLabels}
-                <text x="${(padding.left + 4).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" fill="var(--text-secondary)" font-size="11">${escapeHtml(usageMetricMeta[metric]?.label || metric)}</text>
-                <text x="${(width - padding.right).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" text-anchor="end" fill="var(--text-secondary)" font-size="11">最新 ${escapeHtml(formatUsageMetricPlain(metric, lastPoint.value))}</text>
+                <text x="${(padding.left + 4).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" fill="var(--text-secondary)" font-size="11">${escapeHtml(t(usageMetricMeta[metric]?.label || metric))}</text>
+                <text x="${(width - padding.right).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" text-anchor="end" fill="var(--text-secondary)" font-size="11">${escapeHtml(t(`最新 ${formatUsageMetricPlain(metric, lastPoint.value)}`))}</text>
             `;
 
             /* ---- Hover interaction ---- */
