@@ -1518,7 +1518,9 @@
             const t = window.__i18n_t || ((s) => s);
             const num = Number(value || 0);
             const formatted = (num / 1000000).toFixed(2);
-            return `<span class="req-token-number">${formatted}</span>&nbsp;&nbsp;<span class="req-token-unit">${t('百万Tokens')}</span>`;
+            const lang = localStorage.getItem('lang') || 'zh';
+            const unit = lang === 'zh' ? '百万Tokens' : 'M Tokens';
+            return `<span class="req-token-number">${formatted}</span>&nbsp;&nbsp;<span class="req-token-unit">${unit}</span>`;
         }
 
         function formatMillionShort(value) {
@@ -1528,10 +1530,16 @@
 
         function pickTokenUnit(value) {
             const t = window.__i18n_t || ((s) => s);
+            const lang = localStorage.getItem('lang') || 'zh';
             const num = Math.max(0, Number(value || 0));
-            if (num >= 100000000) return { scale: 100000000, unit: t('亿Tokens') };
-            if (num >= 10000000) return { scale: 10000000, unit: t('千万Tokens') };
-            return { scale: 1000000, unit: t('百万Tokens') };
+            if (lang === 'zh') {
+                if (num >= 100000000) return { scale: 100000000, unit: '亿Tokens' };
+                if (num >= 10000000) return { scale: 10000000, unit: '千万Tokens' };
+                return { scale: 1000000, unit: '百万Tokens' };
+            }
+            // en/vi: use M/B
+            if (num >= 1000000000) return { scale: 1000000000, unit: 'B Tokens' };
+            return { scale: 1000000, unit: 'M Tokens' };
         }
 
         function formatTokens(value, decimals = 2) {
