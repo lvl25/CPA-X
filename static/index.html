@@ -1593,7 +1593,8 @@
         }
 
         function formatUsdPlain(value, decimals = 2) {
-            return `${Number(value || 0).toFixed(decimals)} 美元`;
+            const t = window.__i18n_t || ((s) => s);
+            return `${Number(value || 0).toFixed(decimals)} ${t('美元')}`;
         }
 
         function formatUsageMetricPlain(metric, value) {
