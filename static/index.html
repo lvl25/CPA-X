@@ -412,6 +412,26 @@
             width: 100%;
             height: 240px;
         }
+        .usage-chart-tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(18,22,28,0.92);
+            border: 1px solid rgba(122,160,188,0.45);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #e0e6ed;
+            white-space: nowrap;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .usage-chart-tooltip.visible { opacity: 1; }
+        .usage-chart-tooltip .tooltip-label { color: var(--text-muted); font-size: 10px; }
+        .usage-chart-tooltip .tooltip-value { font-weight: 700; font-size: 13px; color: #7aa0bc; }
         .usage-chart-empty {
             position: absolute;
             inset: 8px;
@@ -1134,6 +1154,7 @@
                 </div>
                 <div class="usage-chart-frame">
                     <svg id="usage-trend-chart" viewBox="0 0 760 240" preserveAspectRatio="none" aria-label="Usage trend chart"></svg>
+                    <div class="usage-chart-tooltip" id="usage-chart-tooltip"></div>
                     <div class="usage-chart-empty show" id="usage-chart-empty">正在加载 usage analytics...</div>
                 </div>
                 <div class="usage-chart-note" id="usage-chart-note">-</div>
@@ -1744,6 +1765,7 @@
         function renderUsageTrendChart(bucketPayload) {
             const svg = document.getElementById('usage-trend-chart');
             const emptyEl = document.getElementById('usage-chart-empty');
+            const tooltipEl = document.getElementById('usage-chart-tooltip');
             if (!svg || !emptyEl) return;
 
             const points = Array.isArray(bucketPayload?.points) ? bucketPayload.points : [];
@@ -1803,8 +1825,17 @@
             const pointsMarkup = coords.map((point, index) => {
                 const radius = index === coords.length - 1 ? 4 : 2.5;
                 const opacity = index === coords.length - 1 ? 1 : 0.75;
-                return `<circle cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="${radius}" fill="#7aa0bc" opacity="${opacity}"></circle>`;
+                return `<circle class="usage-dot" data-idx="${index}" cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="${radius}" fill="#7aa0bc" opacity="${opacity}"></circle>`;
             }).join('');
+
+            /* Invisible hit zones for hover — wider than the dots for easier targeting */
+            const hitWidth = Math.max(xStep * 0.8, 12);
+            const hitZones = coords.map((point, index) => {
+                return `<rect class="usage-hit" data-idx="${index}" x="${(point.x - hitWidth / 2).toFixed(2)}" y="${padding.top}" width="${hitWidth.toFixed(2)}" height="${chartHeight}" fill="transparent" style="cursor:crosshair"></rect>`;
+            }).join('');
+
+            /* Crosshair line (hidden by default) */
+            const crosshair = `<line id="usage-crosshair" x1="0" y1="${padding.top}" x2="0" y2="${(padding.top + chartHeight).toFixed(2)}" stroke="rgba(122,160,188,0.5)" stroke-width="1" stroke-dasharray="4 3" style="display:none"></line>`;
 
             const lastPoint = coords[coords.length - 1];
             svg.innerHTML = `
@@ -1818,10 +1849,68 @@
                 <path d="${areaPath}" fill="url(#usageAreaGradient)"></path>
                 <path d="${linePath}" fill="none" stroke="#7aa0bc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
                 ${pointsMarkup}
+                ${crosshair}
+                ${hitZones}
                 ${xLabels}
                 <text x="${(padding.left + 4).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" fill="var(--text-secondary)" font-size="11">${escapeHtml(usageMetricMeta[metric]?.label || metric)}</text>
                 <text x="${(width - padding.right).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" text-anchor="end" fill="var(--text-secondary)" font-size="11">最新 ${escapeHtml(formatUsageMetricPlain(metric, lastPoint.value))}</text>
             `;
+
+            /* ---- Hover interaction ---- */
+            const crosshairEl = svg.querySelector('#usage-crosshair');
+            const dots = svg.querySelectorAll('.usage-dot');
+            const metricLabel = usageMetricMeta[metric]?.label || metric;
+
+            svg.querySelectorAll('.usage-hit').forEach((rect) => {
+                rect.addEventListener('mouseenter', (e) => {
+                    const idx = Number(rect.dataset.idx);
+                    const pt = coords[idx];
+                    if (!pt) return;
+
+                    /* crosshair */
+                    if (crosshairEl) {
+                        crosshairEl.setAttribute('x1', pt.x.toFixed(2));
+                        crosshairEl.setAttribute('x2', pt.x.toFixed(2));
+                        crosshairEl.style.display = '';
+                    }
+                    /* enlarge hovered dot */
+                    dots.forEach((d) => {
+                        const di = Number(d.dataset.idx);
+                        d.setAttribute('r', di === idx ? '5' : (di === coords.length - 1 ? '4' : '2.5'));
+                        d.setAttribute('opacity', di === idx ? '1' : (di === coords.length - 1 ? '1' : '0.75'));
+                    });
+
+                    /* tooltip */
+                    if (tooltipEl) {
+                        const t = window.__i18n_t || ((s) => s);
+                        tooltipEl.innerHTML = `<div class="tooltip-label">${escapeHtml(t(pt.label || ''))}</div><div class="tooltip-value">${escapeHtml(t(metricLabel))}: ${escapeHtml(formatUsageMetricPlain(metric, pt.value))}</div>`;
+                        tooltipEl.classList.add('visible');
+
+                        /* Position tooltip relative to chart frame */
+                        const svgRect = svg.getBoundingClientRect();
+                        const scaleX = svgRect.width / width;
+                        const scaleY = svgRect.height / height;
+                        let left = pt.x * scaleX + 12;
+                        let top = pt.y * scaleY - 10;
+                        /* Flip to left side if near right edge */
+                        if (left + tooltipEl.offsetWidth + 8 > svgRect.width) {
+                            left = pt.x * scaleX - tooltipEl.offsetWidth - 12;
+                        }
+                        if (top < 0) top = 4;
+                        tooltipEl.style.left = left + 'px';
+                        tooltipEl.style.top = top + 'px';
+                    }
+                });
+                rect.addEventListener('mouseleave', () => {
+                    if (crosshairEl) crosshairEl.style.display = 'none';
+                    dots.forEach((d) => {
+                        const di = Number(d.dataset.idx);
+                        d.setAttribute('r', di === coords.length - 1 ? '4' : '2.5');
+                        d.setAttribute('opacity', di === coords.length - 1 ? '1' : '0.75');
+                    });
+                    if (tooltipEl) tooltipEl.classList.remove('visible');
+                });
+            });
         }
 
         function renderUsageAccountBars(bucketPayload) {
