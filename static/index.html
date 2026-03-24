@@ -2003,6 +2003,7 @@
         async function refreshStatus() {
             if (inflight.refreshStatus) return;
             inflight.refreshStatus = true;
+            const t = window.__i18n_t || ((s) => s);
             const d = await api('/api/status');
             if (!d) { inflight.refreshStatus = false; return; }
             configWriteEnabled = d.config?.write_enabled !== false;
@@ -2148,8 +2149,8 @@
             // 自动更新开关
             const sw = document.getElementById('auto-switch');
             const label = document.getElementById('auto-label');
-            if (d.update.auto_enabled) { sw.classList.add('on'); label.textContent = '已开启'; }
-            else { sw.classList.remove('on'); label.textContent = '已关闭'; }
+            if (d.update.auto_enabled) { sw.classList.add('on'); label.textContent = t('已开启'); }
+            else { sw.classList.remove('on'); label.textContent = t('已关闭'); }
             const idleInputEl = document.getElementById('idle-input');
             const checkIntervalEl = document.getElementById('check-interval-input');
             const editingIdle = document.activeElement === idleInputEl;
@@ -2176,7 +2177,7 @@
             const autoStatusLine = document.getElementById('auto-status-line');
             const autoStatusDetail = document.getElementById('auto-status-detail');
             if (autoStatusLine) {
-                let statusText = autoStatus.summary || '等待状态更新';
+                let statusText = t(autoStatus.summary || '等待状态更新');
                 let statusClass = 'info';
                 const phase = autoStatus.phase || 'unknown';
                 if (phase === 'disabled' || phase === 'wait_idle' || phase === 'wait_check') {
@@ -2192,31 +2193,31 @@
             if (autoStatusDetail) {
                 const detailParts = [];
                 if (autoStatus.has_update) {
-                    detailParts.push(`发现新版本：${escapeHtml(d.version.current)} → ${escapeHtml(d.version.latest)}`);
+                    detailParts.push(t(`发现新版本：${escapeHtml(d.version.current)} → ${escapeHtml(d.version.latest)}`));
                 } else {
-                    detailParts.push('当前没有可安装的新版本');
+                    detailParts.push(t('当前没有可安装的新版本'));
                 }
                 if (autoIdle.last_request_time) {
                     if (autoIdle.is_idle) {
-                        detailParts.push(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，已空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_for_seconds || 0))}`);
+                        detailParts.push(t(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，已空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_for_seconds || 0))}`));
                     } else {
-                        detailParts.push(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，还需空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_wait_seconds || 0))}`);
+                        detailParts.push(t(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，还需空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_wait_seconds || 0))}`));
                     }
                 } else {
-                    detailParts.push('暂无请求记录，当前视为空闲');
+                    detailParts.push(t('暂无请求记录，当前视为空闲'));
                 }
                 if (d.update.auto_enabled && typeof autoStatus.next_check_in_seconds === 'number') {
-                    detailParts.push(`下一次自动检查约在 ${renderAutoTime(formatDurationCn(autoStatus.next_check_in_seconds))} 后`);
+                    detailParts.push(t(`下一次自动检查约在 ${renderAutoTime(formatDurationCn(autoStatus.next_check_in_seconds))} 后`));
                 }
                 if (autoStatus.last_check_time) {
-                    detailParts.push(`上次自动检查时间：${escapeHtml(formatDateTimeCn(autoStatus.last_check_time))}`);
+                    detailParts.push(t(`上次自动检查时间：${escapeHtml(formatDateTimeCn(autoStatus.last_check_time))}`));
                 }
-                autoStatusDetail.innerHTML = detailParts.join('；');
+                autoStatusDetail.innerHTML = detailParts.join(t('；'));
             }
 
             const healthOverallEl = document.getElementById('health-overall');
             if (healthOverallEl) {
-                healthOverallEl.textContent = d.health === 'healthy' ? '健康' : d.health === 'degraded' ? '警告' : d.health === 'unhealthy' ? '异常' : d.health;
+                healthOverallEl.textContent = d.health === 'healthy' ? t('健康') : d.health === 'degraded' ? t('警告') : d.health === 'unhealthy' ? t('异常') : d.health;
             }
 
             inflight.refreshStatus = false;
@@ -2265,12 +2266,13 @@
         }
 
         async function runHealthCheck() {
+            const t = window.__i18n_t || ((s) => s);
             if (inflight.runHealthCheck) return;
             inflight.runHealthCheck = true;
             const d = await api('/api/health');
             if (!d) { inflight.runHealthCheck = false; return; }
 
-            document.getElementById('health-overall').textContent = d.overall === 'healthy' ? '健康' : d.overall === 'degraded' ? '警告' : '异常';
+            document.getElementById('health-overall').textContent = d.overall === 'healthy' ? t('健康') : d.overall === 'degraded' ? t('警告') : t('异常');
 
             const renderHealthItems = (checksMap) => {
                 const container = document.getElementById('health-details');
@@ -2283,12 +2285,12 @@
                 };
 
                 const labelMap = {
-                    service: '服务进程',
-                    config: '配置文件',
-                    disk: '磁盘空间',
-                    memory: '内存使用',
-                    auth: '认证文件',
-                    api_port: 'API端口'
+                    service: t('服务进程'),
+                    config: t('配置文件'),
+                    disk: t('磁盘空间'),
+                    memory: t('内存使用'),
+                    auth: t('认证文件'),
+                    api_port: t('API端口')
                 };
 
                 const order = ['service', 'config', 'disk', 'memory', 'auth', 'api_port'];
@@ -2301,7 +2303,7 @@
                     const icon = getIcon(check.status);
                     const label = escapeHtml(labelMap[key] || check.name || key);
                     const color = check.status === 'pass' ? 'var(--success)' : check.status === 'warn' ? 'var(--warning)' : 'var(--danger)';
-                    const title = escapeHtml(check.message || (check.status === 'pass' ? '正常' : '异常'));
+                    const title = escapeHtml(t(check.message || (check.status === 'pass' ? '正常' : '异常')));
                     return `
                         <div class="health-item" title="${title}">
                             <span class="health-name">${label}</span>
@@ -2436,11 +2438,12 @@
 
         // 获取更新历史
         async function refreshUpdateHistory() {
+            const t = window.__i18n_t || ((s) => s);
             if (inflight.refreshUpdateHistory) return;
             inflight.refreshUpdateHistory = true;
             const d = await api('/api/update-history');
             if (!d || !d.success) {
-                document.getElementById('last-update-time').textContent = '上次更新: 暂无记录';
+                document.getElementById('last-update-time').textContent = t('上次更新: 暂无记录');
                 document.getElementById('recent-updates').innerHTML = '';
                 inflight.refreshUpdateHistory = false;
                 return;
@@ -2448,7 +2451,7 @@
 
             const history = d.history || [];
             if (history.length === 0) {
-                document.getElementById('last-update-time').textContent = '上次更新: 暂无记录';
+                document.getElementById('last-update-time').textContent = t('上次更新: 暂无记录');
                 document.getElementById('recent-updates').innerHTML = '';
                 inflight.refreshUpdateHistory = false;
                 return;
@@ -2461,26 +2464,26 @@
             if (hoursAgo === null) {
                 timeStr = '-';
             } else if (hoursAgo < 1) {
-                timeStr = Math.round(hoursAgo * 60) + ' 分钟前';
+                timeStr = Math.round(hoursAgo * 60) + t(' 分钟前');
             } else if (hoursAgo < 24) {
-                timeStr = hoursAgo.toFixed(1) + ' 小时前';
+                timeStr = hoursAgo.toFixed(1) + t(' 小时前');
             } else {
-                timeStr = (hoursAgo / 24).toFixed(1) + ' 天前';
+                timeStr = (hoursAgo / 24).toFixed(1) + t(' 天前');
             }
-            document.getElementById('last-update-time').textContent = `上次更新: ${timeStr} (${lastUpdate.version})`;
+            document.getElementById('last-update-time').textContent = t(`上次更新: ${timeStr} (${lastUpdate.version})`);
 
             // 显示最近三次更新
             const recent = history.slice(-3).reverse();
             if (recent.length > 1) {
                 const recentHtml = recent.slice(1).map((u, i) => {
-                    let t;
-                    if (u.hours_ago === null) t = '-';
-                    else if (u.hours_ago < 1) t = Math.round(u.hours_ago * 60) + '分钟前';
-                    else if (u.hours_ago < 24) t = u.hours_ago.toFixed(1) + '小时前';
-                    else t = (u.hours_ago / 24).toFixed(1) + '天前';
-                    return `<span style="margin-right:8px;">${escapeHtml(u.version || '-')} : ${escapeHtml(t)}</span>`;
+                    let tt;
+                    if (u.hours_ago === null) tt = '-';
+                    else if (u.hours_ago < 1) tt = Math.round(u.hours_ago * 60) + t('分钟前');
+                    else if (u.hours_ago < 24) tt = u.hours_ago.toFixed(1) + t('小时前');
+                    else tt = (u.hours_ago / 24).toFixed(1) + t('天前');
+                    return `<span style="margin-right:8px;">${escapeHtml(u.version || '-')} : ${escapeHtml(tt)}</span>`;
                 }).join('');
-                document.getElementById('recent-updates').innerHTML = '历史: ' + recentHtml;
+                document.getElementById('recent-updates').innerHTML = t('历史: ') + recentHtml;
             } else {
                 document.getElementById('recent-updates').innerHTML = '';
             }
@@ -2490,9 +2493,10 @@
 
         // 操作函数
         async function serviceAction(action) {
-            const labels = { start: '启动', stop: '停止', restart: '重启' };
+            const t = window.__i18n_t || ((s) => s);
+            const labels = { start: t('启动'), stop: t('停止'), restart: t('重启') };
             const r = await api(`/api/service/${action}`, { method: 'POST' });
-            toast(r?.success ? `${labels[action]}成功` : `${labels[action]}失败`, r?.success ? 'success' : 'error');
+            toast(r?.success ? `${labels[action]}${t('成功')}` : `${labels[action]}${t('失败')}`, r?.success ? 'success' : 'error');
             refreshStatus();
         }
 

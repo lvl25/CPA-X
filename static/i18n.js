@@ -290,6 +290,20 @@
         '需要面板密钥（Panel Access Key）。请输入：': { en: 'Panel Access Key required. Please enter:', vi: 'Cần khóa truy cập bảng điều khiển. Vui lòng nhập:' },
         '需要面板密钥才能访问': { en: 'Panel key required for access', vi: 'Cần khóa truy cập để vào bảng điều khiển' },
         '面板密钥无效，请重新设置': { en: 'Invalid panel key, please reset', vi: 'Khóa truy cập không hợp lệ, vui lòng đặt lại' },
+        '等待状态更新': { en: 'Waiting for status update', vi: 'Đang chờ cập nhật trạng thái' },
+        '当前没有可安装的新版本': { en: 'No new version available', vi: 'Không có phiên bản mới' },
+        '暂无请求记录，当前视为空闲': { en: 'No request records, currently idle', vi: 'Chưa có bản ghi yêu cầu, đang rảnh' },
+        '当前指标下暂无账号 usage 分布': { en: 'No account distribution for this metric', vi: 'Chưa có phân bổ tài khoản cho chỉ số này' },
+        '成功': { en: 'succeeded', vi: 'thành công' },
+        '失败': { en: 'failed', vi: 'thất bại' },
+        '；': { en: '; ', vi: '; ' },
+        ' 分钟前': { en: ' min ago', vi: ' phút trước' },
+        ' 小时前': { en: ' hours ago', vi: ' giờ trước' },
+        ' 天前': { en: ' days ago', vi: ' ngày trước' },
+        '分钟前': { en: 'min ago', vi: 'phút trước' },
+        '小时前': { en: 'hours ago', vi: 'giờ trước' },
+        '天前': { en: 'days ago', vi: 'ngày trước' },
+        '历史: ': { en: 'History: ', vi: 'Lịch sử: ' },
     };
 
     // ==================== Regex-based patterns for dynamic strings ====================
@@ -373,7 +387,12 @@
             [/^自动更新已(开启|关闭).*$/, (m) => m[1] === '开启' ? 'Auto-update enabled' : 'Auto-update disabled'],
             [/^下次检查[：:](.+)$/, (m) => `Next check: ${m[1]}`],
             [/^上次检查[：:](.+)$/, (m) => `Last check: ${m[1]}`],
-            [/^部分 (\S+) 无法映射到 runtime auth metadata.*显示。?$/, (m) => `Some ${m[1]} cannot be mapped to runtime auth metadata, showing raw IDs.`],
+            // Auto-update status
+            [/^发现新版本：(.+) → (.+)$/, (m) => `New version: ${m[1]} \u2192 ${m[2]}`],
+            [/^最近请求在 (.+)，已空闲 (.+)$/, (m) => `Last request at ${m[1]}, idle for ${m[2]}`],
+            [/^最近请求在 (.+)，还需空闲 (.+)$/, (m) => `Last request at ${m[1]}, need ${m[2]} more idle`],
+            [/^下一次自动检查约在 (.+) 后$/, (m) => `Next auto-check in ${m[1]}`],
+            [/^上次自动检查时间：(.+)$/, (m) => `Last auto-check: ${m[1]}`],
         ],
         vi: [
             // Model count
@@ -474,7 +493,12 @@
             [/^下次检查[：:](.+)$/, (m) => `Kiểm tra tiếp: ${m[1]}`],
             [/^上次检查[：:](.+)$/, (m) => `Kiểm tra trước: ${m[1]}`],
             // Account distribution labels  
-            [/^部分 (\S+) 无法映射到 runtime auth metadata.*显示。?$/, (m) => `Một số ${m[1]} không thể ánh xạ tới runtime auth metadata, hiển thị ID gốc.`],
+            // Auto-update status
+            [/^发现新版本：(.+) → (.+)$/, (m) => `Phiên bản mới: ${m[1]} \u2192 ${m[2]}`],
+            [/^最近请求在 (.+)，已空闲 (.+)$/, (m) => `Yêu cầu gần nhất lúc ${m[1]}, đã rảnh ${m[2]}`],
+            [/^最近请求在 (.+)，还需空闲 (.+)$/, (m) => `Yêu cầu gần nhất lúc ${m[1]}, cần rảnh thêm ${m[2]}`],
+            [/^下一次自动检查约在 (.+) 后$/, (m) => `Kiểm tra tự động tiếp trong ${m[1]}`],
+            [/^上次自动检查时间：(.+)$/, (m) => `Kiểm tra tự động trước: ${m[1]}`],
         ]
     };
 
