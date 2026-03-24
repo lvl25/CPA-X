@@ -46,6 +46,10 @@
         '缓存': { en: 'Cache', vi: 'Bộ đệm' },
         '保存价格': { en: 'Save Pricing', vi: 'Lưu giá' },
         '千万Tokens': { en: '10M Tokens', vi: 'Chục triệu Tokens' },
+        '亿Tokens': { en: '100M Tokens', vi: 'Trăm triệu Tokens' },
+        '美元/百万Tokens': { en: 'USD/M Tokens', vi: 'USD/Triệu Tokens' },
+        '美元/千万Tokens': { en: 'USD/10M Tokens', vi: 'USD/Chục triệu Tokens' },
+        '美元/亿Tokens': { en: 'USD/100M Tokens', vi: 'USD/Trăm triệu Tokens' },
         '来源': { en: 'Source', vi: 'Nguồn' },
         '计价口径': { en: 'Pricing basis', vi: 'Đơn vị tính giá' },
         '手动': { en: 'Manual', vi: 'Thủ công' },
@@ -551,7 +555,8 @@
             '#pricing-current-title', '#pricing-source-info', '#pricing-basis-info',
             '#usage-cost-basis-info', '#usage-cost-breakdown-info',
             '#auto-status-detail', '#auto-status-line',
-            '.col-toggle[title]'
+            '.col-toggle[title]',
+            '.req-token-unit', '.req-cost-unit'
         ];
         document.querySelectorAll(selectors.join(',')).forEach(translateElement);
 

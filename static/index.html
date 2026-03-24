@@ -1512,9 +1512,10 @@
         }
 
         function formatMillionTokens(value) {
+            const t = window.__i18n_t || ((s) => s);
             const num = Number(value || 0);
             const formatted = (num / 1000000).toFixed(2);
-            return `<span class="req-token-number">${formatted}</span>&nbsp;&nbsp;<span class="req-token-unit">百万Tokens</span>`;
+            return `<span class="req-token-number">${formatted}</span>&nbsp;&nbsp;<span class="req-token-unit">${t('百万Tokens')}</span>`;
         }
 
         function formatMillionShort(value) {
@@ -1523,10 +1524,11 @@
         }
 
         function pickTokenUnit(value) {
+            const t = window.__i18n_t || ((s) => s);
             const num = Math.max(0, Number(value || 0));
-            if (num >= 100000000) return { scale: 100000000, unit: '亿Tokens' };
-            if (num >= 10000000) return { scale: 10000000, unit: '千万Tokens' };
-            return { scale: 1000000, unit: '百万Tokens' };
+            if (num >= 100000000) return { scale: 100000000, unit: t('亿Tokens') };
+            if (num >= 10000000) return { scale: 10000000, unit: t('千万Tokens') };
+            return { scale: 1000000, unit: t('百万Tokens') };
         }
 
         function formatTokens(value, decimals = 2) {
@@ -1543,9 +1545,10 @@
         }
 
         function formatUsd(value) {
+            const t = window.__i18n_t || ((s) => s);
             const num = Number(value || 0);
             const formatted = num.toFixed(2);
-            return `<span class="req-cost-number">${formatted}</span>&nbsp;<span class="req-cost-unit">美元</span>`;
+            return `<span class="req-cost-number">${formatted}</span>&nbsp;<span class="req-cost-unit">${t('美元')}</span>`;
         }
 
         function formatUsdShort(value) {
@@ -1554,8 +1557,9 @@
         }
 
         function getPricingBasisText(data) {
+            const t = window.__i18n_t || ((s) => s);
             const basis = data && data.pricing_basis ? data.pricing_basis : null;
-            return (basis && basis.text) ? basis.text : '美元/百万Tokens';
+            return t((basis && basis.text) ? basis.text : '美元/百万Tokens');
         }
 
         function formatPricingNumber(value, digits = 3) {
