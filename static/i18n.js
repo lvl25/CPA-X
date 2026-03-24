@@ -20,6 +20,8 @@
         '刷新': { en: 'Refresh', vi: 'Làm mới' },
         '切换主题': { en: 'Toggle theme', vi: 'Chuyển chủ đề' },
         '列数': { en: 'Columns', vi: 'Số cột' },
+        '日志': { en: 'Logs', vi: 'Nhật ký' },
+        '切换日志面板': { en: 'Toggle log panel', vi: 'Ẩn/Hiện nhật ký' },
 
         // ---- Update Banner ----
         '发现新版本可用！当前:': { en: 'New version available! Current:', vi: 'Có phiên bản mới! Hiện tại:' },
