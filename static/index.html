@@ -30,8 +30,7 @@
             --purple-glow: 0 0 15px rgba(122, 104, 138, 0.28);
             --req-number: #7aa0bc;
             --req-unit: #8a909a;
-            --quote-font-size: 15px;
-            --quote-author-size: 13px;
+
         }
 
         [data-theme="light"] {
@@ -190,16 +189,44 @@
             min-height: 0;
         }
 
-        /* 卡片网格 */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(var(--grid-cols, 4), minmax(0, 1fr));
             gap: 10px;
             align-items: start;
         }
+
+        /* Column layout selector */
+        .col-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 2px;
+        }
+        .col-toggle-btn {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .col-toggle-btn:hover { color: var(--text-primary); }
+        .col-toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent), #007799);
+            color: white;
+            box-shadow: var(--accent-glow);
+        }
         .cards-grid > .card { min-width: 0; width: 100%; align-self: start; }
-        .cards-grid.fixed-grid { grid-auto-rows: var(--grid-row-height, 320px); }
-        .cards-grid.fixed-grid > .card { height: var(--grid-row-height, 320px); overflow: hidden; }
+        .cards-grid.fixed-grid { grid-auto-rows: minmax(var(--grid-row-height, 320px), auto); }
+        .cards-grid.fixed-grid > .card { min-height: var(--grid-row-height, 320px); overflow: visible; }
         .cards-grid.fixed-top { --grid-row-height: 360px; }
         .cards-grid.fixed-middle { --grid-row-height: 260px; }
         .cards-grid.fixed-bottom { --grid-row-height: 256px; }
@@ -230,10 +257,7 @@
         .card-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
         .service-card { min-height: 300px; }
-        .quote-box { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 0; }
-        .quote-controls { display: flex; gap: 6px; align-items: center; margin-top: auto; }
-        .quote-size-controls { display: flex; gap: 6px; margin-left: auto; white-space: nowrap; width: 100%; justify-content: flex-end; }
-        .quote-size-controls .btn { padding: 4px 6px; font-size: 10px; }
+
         .health-card { display: flex; flex-direction: column; min-height: 0; }
         .health-service-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
         .health-service-info .info-row { padding: 4px 0; border-bottom: none; font-size: 11px; }
@@ -278,6 +302,7 @@
         }
         .request-body .req-tokens-grid .req-token-number { color: var(--req-number); font-weight: 700; }
         .request-body .req-tokens-grid .req-token-unit { color: var(--req-unit); }
+        .request-body .req-tokens-grid .req-inline-pair { display: inline-flex; gap: 4px; align-items: baseline; }
         .request-body .req-tokens-grid .req-cost-number { color: var(--req-number); font-weight: 700; }
         .request-body .req-tokens-grid .req-cost-unit { color: var(--success); }
         .request-body .req-tokens-grid .req-total {
@@ -298,6 +323,180 @@
         .request-body .req-tokens-grid .req-total .req-cost-number { color: #2f5f86; }
         .request-body .req-tokens-grid .req-total .req-token-unit { color: #4d525b; }
         .request-body .req-tokens-grid .req-total .req-cost-unit { color: #2f6b4b; }
+        .usage-analytics-section { margin-top: 0; }
+        .usage-analytics-head, .usage-account-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .usage-analytics-subtitle, .usage-chart-note, .usage-account-note, .usage-analytics-stamp {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+        .usage-analytics-stamp { text-align: right; }
+        .usage-toggle-row, .usage-toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .usage-toggle {
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 11px;
+            line-height: 1;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+        }
+        .usage-toggle:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(0,0,0,0.12);
+        }
+        .usage-toggle.active {
+            border-color: transparent;
+            color: white;
+            background: linear-gradient(135deg, #7aa0bc, #4f7da0 55%, #2f5f86);
+            box-shadow: 0 12px 24px rgba(47,95,134,0.25);
+        }
+        .usage-toggle:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .usage-analytics-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .usage-analytics-pill {
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            background:
+                radial-gradient(circle at top left, rgba(122,160,188,0.18), transparent 48%),
+                rgba(255,255,255,0.03);
+        }
+        .usage-analytics-pill span {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .usage-analytics-pill strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+        .usage-chart-frame {
+            position: relative;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            background:
+                radial-gradient(circle at top left, rgba(122,160,188,0.18), transparent 42%),
+                linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            overflow: hidden;
+        }
+        #usage-trend-chart {
+            display: block;
+            width: 100%;
+            height: 240px;
+        }
+        .usage-chart-empty {
+            position: absolute;
+            inset: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.06);
+            backdrop-filter: blur(4px);
+        }
+        .usage-chart-empty.show { display: flex; }
+        .usage-account-bars {
+            display: grid;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .usage-account-row {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03);
+        }
+        .usage-account-row-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .usage-account-label {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+            min-width: 0;
+        }
+        .usage-account-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .usage-account-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .usage-account-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+        .usage-account-share {
+            margin-left: 6px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        .usage-account-track {
+            margin-top: 6px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+        .usage-account-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #7aa0bc, #6ac7a8);
+        }
+        .usage-account-empty {
+            padding: 10px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        @media (max-width: 768px) {
+            .usage-analytics-head, .usage-account-head { flex-direction: column; }
+            .usage-analytics-metrics { grid-template-columns: 1fr; }
+            #usage-trend-chart { height: 220px; }
+        }
         .pricing-toggle summary {
             list-style: none;
             cursor: pointer;
@@ -311,29 +510,8 @@
         .pricing-toggle summary::-webkit-details-marker { display: none; }
         .pricing-toggle[open] summary { color: var(--accent); }
         .pricing-toggle .pricing-body { margin-top: 6px; }
-        #quote-text {
-            font-size: var(--quote-font-size);
-            font-weight: 600;
-            line-height: 1.5;
-            color: var(--text-primary);
-            height: 120px;
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-        #quote-text::-webkit-scrollbar { width: 0; height: 0; }
-        #quote-author {
-            font-size: var(--quote-author-size);
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-align: right;
-            line-height: 1.3;
-            white-space: normal;
-            word-break: break-word;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        .time-emphasis { color: var(--warning); font-weight: 700; }
+
 
         .pricing-grid {
             display: grid;
@@ -342,8 +520,7 @@
         }
         .pricing-grid .input { min-width: 0; width: 100%; }
 
-        .model-card { display: flex; flex-direction: column; min-height: 0; height: 100%; }
-        .model-card .model-list { flex: 1; min-height: 0; }
+
 
         /* 徽章 */
         .badge {
@@ -580,22 +757,7 @@
         .health-icon.fail { color: var(--danger); }
         .health-icon.warn { color: var(--warning); }
 
-        /* 模型列表 */
-        .model-list { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; overflow-y: auto; }
-        .model-group { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 6px; }
-        .model-group summary { cursor: pointer; font-size: 12px; color: var(--text-secondary); outline: none; }
-        .model-group-list { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
-        .model-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 9px 13px;
-            background: var(--glass-bg);
-            border-radius: 7px;
-            font-size: 12px;
-        }
-        .model-name { font-weight: 600; color: var(--text-primary); }
-        .model-provider { font-size: 10px; color: var(--text-muted); }
+
 
         /* 可视化配置 */
         .config-visual { display: flex; flex-direction: column; gap: 10px; }
@@ -789,6 +951,11 @@
             </div>
         </div>
         <div class="header-actions">
+            <div class="col-toggle" title="列数">
+                <button class="col-toggle-btn" data-cols="2" onclick="setGridCols(2)">2</button>
+                <button class="col-toggle-btn" data-cols="3" onclick="setGridCols(3)">3</button>
+                <button class="col-toggle-btn" data-cols="4" onclick="setGridCols(4)">4</button>
+            </div>
             <button class="btn btn-ghost btn-sm" onclick="refreshAll()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                 刷新
@@ -813,31 +980,6 @@
 
             <!-- 服务与状态 -->
                 <div class="cards-grid fixed-grid fixed-top">
-                <!-- 名人语录 -->
-                <div class="card glass service-card">
-                    <div class="card-header">
-                        <div class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-                        <div>
-                            <div class="card-title">名人语录</div>
-                            <div class="card-subtitle">随机语录</div>
-                        </div>
-                    </div>
-                    <div class="quote-box" style="margin-top:10px;background:var(--glass-bg);border-radius:8px;padding:12px;">
-                        <div id="quote-text">-</div>
-                        <div id="quote-author" style="margin-top:6px;text-align:right;">-</div>
-                        <div class="quote-controls">
-                            <span style="font-size:10px;color:var(--text-muted);">刷新间隔</span>
-                            <input type="number" id="quote-interval-input" class="input" style="width:60px;" value="5" min="1">
-                            <span style="font-size:10px;color:var(--text-muted);">分钟</span>
-                            <button class="btn btn-ghost btn-sm" onclick="refreshQuote()" style="margin-left:auto;">换一条</button>
-                            <button class="btn btn-ghost btn-sm" onclick="addQuote()" style="opacity:0.6;font-size:10px;">添加</button>
-                        </div>
-                        <div class="quote-size-controls" style="margin-top:6px;">
-                            <button class="btn btn-ghost btn-sm" id="quote-size-btn" onclick="adjustQuoteFont('text')">语录：15 px</button>
-                            <button class="btn btn-ghost btn-sm" id="quote-author-size-btn" onclick="adjustQuoteFont('author')">作者：13 px</button>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- 请求统计 -->
                 <div class="card glass request-card">
@@ -857,7 +999,7 @@
                             </div>
                             <div class="req-summary-item">
                                 <div class="req-summary-number tokens" id="req-total-tokens">-</div>
-                                <div class="req-summary-label">百万Tokens</div>
+                                <div class="req-summary-label" id="req-total-tokens-unit">百万Tokens</div>
                             </div>
                             <div class="req-summary-item">
                                 <div class="req-summary-number cost" id="req-total-cost">-</div>
@@ -887,7 +1029,23 @@
                             </div>
                         </div>
                         <div class="req-section pricing-compact">
-                            <div class="health-pricing-title">Token 价格设置（输入/输出/缓存）</div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                                <div class="health-pricing-title" id="pricing-current-title">当前生效价格（美元/百万Tokens）</div>
+                                <div class="request-pricing-toggle" style="display:flex;align-items:center;gap:6px;">
+                                    <span id="pricing-auto-label" style="font-size:11px;color:var(--text-muted);">-</span>
+                                    <div id="pricing-auto-switch" class="switch" onclick="togglePricingAuto()"></div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:var(--text-muted);">
+                                <span>输入 <span id="effective-pricing-input">0.000</span></span>
+                                <span>输出 <span id="effective-pricing-output">0.000</span></span>
+                                <span>缓存 <span id="effective-pricing-cache">0.000</span></span>
+                            </div>
+                            <div id="pricing-source-info" style="margin-top:4px;font-size:11px;color:var(--text-muted);">来源：-</div>
+                            <div id="pricing-basis-info" style="margin-top:2px;font-size:11px;color:var(--text-muted);">计价口径：美元/百万Tokens</div>
+                            <div id="usage-cost-basis-info" style="margin-top:2px;font-size:11px;color:var(--text-muted);">费用按 美元/百万Tokens 计算</div>
+                            <div id="usage-cost-breakdown-info" style="margin-top:2px;font-size:11px;color:var(--text-muted);">当前计费输入：-；缓存命中：-</div>
+                            <div class="health-pricing-title" style="margin-top:8px;">手动价格设置（输入/输出/缓存）</div>
                             <div class="pricing-grid">
                                 <input type="number" id="pricing-input" class="input" placeholder="输入" step="0.001" min="0">
                                 <input type="number" id="pricing-output" class="input" placeholder="输出" step="0.001" min="0">
@@ -896,24 +1054,11 @@
                             <div class="btn-group" style="margin-top:4px;">
                                 <button class="btn btn-ghost btn-sm" onclick="savePricing()" style="flex:1;">保存价格</button>
                             </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 可用模型 -->
-                <div class="card glass model-card">
-                    <div class="card-header">
-                        <div class="card-icon cyan"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
-                        <div style="flex:1;">
-                            <div class="card-title">可用模型</div>
-                            <div class="card-subtitle" id="model-count">共 0 个模型</div>
-                        </div>
-                        <button class="btn btn-ghost btn-sm" onclick="loadModelsFromAPI()">刷新</button>
-                    </div>
-                    <div id="model-list" class="model-list">
-                        <div style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</div>
-                    </div>
-                </div>
 
                 <!-- 健康状态 -->
                 <div class="card glass health-card">
@@ -947,6 +1092,57 @@
                         </div>
                         <button class="btn btn-ghost btn-sm" onclick="runHealthCheck()">运行检查</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- 使用历史 -->
+            <div class="card glass" style="width:100%;">
+                <div class="card-header">
+                    <div class="card-icon cyan"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
+                    <div style="flex:1;">
+                        <div class="card-title">使用历史</div>
+                        <div class="card-subtitle">按小时 / 天 / 月查看趋势</div>
+                    </div>
+                    <div class="usage-analytics-stamp" id="usage-analytics-stamp">加载中...</div>
+                </div>
+                <div class="usage-analytics-subtitle" id="usage-analytics-subtitle" style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布</div>
+                <div class="usage-toggle-row">
+                    <div class="usage-toggle-group" id="usage-bucket-controls">
+                        <button class="usage-toggle" type="button" data-bucket="hour" onclick="setUsageBucket('hour')">小时</button>
+                        <button class="usage-toggle" type="button" data-bucket="day" onclick="setUsageBucket('day')">天</button>
+                        <button class="usage-toggle" type="button" data-bucket="month" onclick="setUsageBucket('month')">月</button>
+                    </div>
+                    <div class="usage-toggle-group" id="usage-metric-controls">
+                        <button class="usage-toggle" type="button" data-metric="requests" onclick="setUsageMetric('requests')">请求数</button>
+                        <button class="usage-toggle" type="button" data-metric="total_tokens" onclick="setUsageMetric('total_tokens')">Tokens</button>
+                        <button class="usage-toggle" type="button" data-metric="cost" onclick="setUsageMetric('cost')">费用</button>
+                    </div>
+                </div>
+                <div class="usage-analytics-metrics">
+                    <div class="usage-analytics-pill">
+                        <span>范围总量</span>
+                        <strong id="usage-range-total">-</strong>
+                    </div>
+                    <div class="usage-analytics-pill">
+                        <span>峰值时段</span>
+                        <strong id="usage-range-peak">-</strong>
+                    </div>
+                    <div class="usage-analytics-pill">
+                        <span>活跃账号</span>
+                        <strong id="usage-range-accounts">-</strong>
+                    </div>
+                </div>
+                <div class="usage-chart-frame">
+                    <svg id="usage-trend-chart" viewBox="0 0 760 240" preserveAspectRatio="none" aria-label="Usage trend chart"></svg>
+                    <div class="usage-chart-empty show" id="usage-chart-empty">正在加载 usage analytics...</div>
+                </div>
+                <div class="usage-chart-note" id="usage-chart-note">-</div>
+                <div class="usage-account-head">
+                    <div class="health-pricing-title">账号分布</div>
+                    <div class="usage-account-note" id="usage-account-note">-</div>
+                </div>
+                <div class="usage-account-bars" id="usage-account-bars">
+                    <div class="usage-account-empty">正在加载账号分布...</div>
                 </div>
             </div>
 
@@ -1015,6 +1211,11 @@
                     <div class="btn-group">
                         <button class="btn btn-ghost btn-sm" onclick="saveUpdateSettings()" style="flex:1;">保存设置</button>
                     </div>
+                    <div class="info-row" style="margin-top:10px;">
+                        <span class="info-label">当前状态</span>
+                        <span class="badge info" id="auto-status-line">-</span>
+                    </div>
+                    <div id="auto-status-detail" style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.5;">-</div>
                 </div>
 
                 <!-- 路由策略 -->
@@ -1058,118 +1259,7 @@
                 </div>
             </div>
 
-            <!-- 监控与工具 -->
-                <div class="cards-grid fixed-grid fixed-bottom">
-                <!-- CPU -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <div class="card-icon blue"><svg viewBox="0 0 24 24"><path d="M17 17H7V7h10m4 4v2h-2v-2m0-2V9h2v2m-2 6v-2h2v2M9 17H7v-2h2m0-2H7v-2h2m0-2H7V7h2m6 4h-2V9h2m0 4h-2v-2h2m0 4h-2v-2h2m2-4V7h-2v2m0 10h2v-2h-2M9 3H7v2h2m8 0h2V3h-2m-4 0h-2v2h2M3 7v2H1V7m0 4v2h2v-2m0 4h2v-2H1m0 6h2v-2H1M3 3H1v2h2m6 18H7v-2h2m8 0h2v2h-2m-4 0h-2v2h2m6-6v2h2v-2m0-4v2h2v-2m0 8h2v-2h-2"/></svg></div>
-                        <div style="flex:1;">
-                            <div class="card-title">CPU 使用率</div>
-                            <div class="card-subtitle" id="cpu-detail">- 核心 | - MHz</div>
-                        </div>
-                    </div>
-                    <div style="text-align:center;padding:8px 0;">
-                        <div class="stat-number" id="cpu-percent">0%</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill blue" id="cpu-bar" style="width:0%;"></div>
-                    </div>
-                    <div style="display:flex;gap:6px;margin-top:8px;">
-                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:13px;font-weight:600;color:var(--accent);" id="cpu-load-1m">0.00</div>
-                            <div style="font-size:9px;color:var(--text-muted);">1分钟</div>
-                        </div>
-                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="cpu-load-5m">0.00</div>
-                            <div style="font-size:9px;color:var(--text-muted);">5分钟</div>
-                        </div>
-                        <div style="flex:1;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="cpu-load-15m">0.00</div>
-                            <div style="font-size:9px;color:var(--text-muted);">15分钟</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.4;">
-                        <div id="cpu-model">CPU 型号：-</div>
-                        <div id="cloud-vendor">云厂商：-</div>
-                        <div id="os-version">系统版本：-</div>
-                    </div>
-                </div>
 
-                <!-- 内存 -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <div class="card-icon purple"><svg viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg></div>
-                        <div style="flex:1;">
-                            <div class="card-title">内存使用率</div>
-                            <div class="card-subtitle" id="mem-detail">- / -</div>
-                        </div>
-                    </div>
-                    <div style="text-align:center;padding:8px 0;">
-                        <div class="stat-number" id="mem-percent">0%</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill purple" id="mem-bar" style="width:0%;"></div>
-                    </div>
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:12px;font-weight:600;color:var(--success);" id="mem-available">0</div>
-                            <div style="font-size:9px;color:var(--text-muted);">可用</div>
-                        </div>
-                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);" id="mem-cached">0</div>
-                            <div style="font-size:9px;color:var(--text-muted);">缓存</div>
-                        </div>
-                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:12px;font-weight:600;color:var(--warning);" id="mem-swap">0%</div>
-                            <div style="font-size:9px;color:var(--text-muted);">Swap</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:12px;font-weight:600;color:var(--accent);" id="cliproxy-cpu">0%</div>
-                            <div style="font-size:9px;color:var(--text-muted);">cliproxy CPU</div>
-                        </div>
-                        <div style="flex:1;min-width:70px;background:var(--glass-bg);border-radius:6px;padding:6px;text-align:center;">
-                            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);" id="cliproxy-mem">0 MB</div>
-                            <div style="font-size:9px;color:var(--text-muted);">cliproxy 内存</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 磁盘 -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <div class="card-icon orange"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg></div>
-                        <div>
-                            <div class="card-title">磁盘使用率</div>
-                            <div class="card-subtitle" id="disk-detail">- / -</div>
-                        </div>
-                    </div>
-                    <div style="text-align:center;padding:12px 0;">
-                        <div class="stat-number" id="disk-percent">0%</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill orange" id="disk-bar" style="width:0%;"></div>
-                    </div>
-                </div>
-
-                <!-- 数据导出 -->
-                <div class="card glass">
-                    <div class="card-header">
-                        <div class="card-icon green"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
-                        <div>
-                            <div class="card-title">数据导出</div>
-                            <div class="card-subtitle">导出日志与统计</div>
-                        </div>
-                    </div>
-                    <div class="btn-group export-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="exportData('logs')">导出日志</button>
-                        <button class="btn btn-ghost btn-sm" onclick="exportData('stats')">导出统计</button>
-                        <button class="btn btn-ghost btn-sm" onclick="exportData('config')">导出配置</button>
-                    </div>
-                </div>
-            </div>
 
         </div>
 
@@ -1238,14 +1328,32 @@
         const API = '';
         const inflight = {
             refreshStatus: false,
-            refreshResources: false,
             refreshCliLogs: false,
-            loadModelsFromAPI: false,
             runHealthCheck: false,
-            refreshUpdateHistory: false
+            refreshUpdateHistory: false,
+            usageAnalytics: false
         };
         let pricingDirty = false;
         let pricingInitialized = false;
+        let updateSettingsDirty = false;
+        let configWriteEnabled = false;
+        const usageAnalyticsState = {
+            data: null,
+            bucket: localStorage.getItem('usage_bucket') || 'day',
+            metric: localStorage.getItem('usage_metric') || 'requests'
+        };
+        const usageMetricMeta = {
+            requests: { label: '请求数' },
+            total_tokens: { label: 'Tokens' },
+            cost: { label: '费用' }
+        };
+        const usageBucketMeta = {
+            hour: { label: '小时' },
+            day: { label: '天' },
+            month: { label: '月' }
+        };
+        if (!usageBucketMeta[usageAnalyticsState.bucket]) usageAnalyticsState.bucket = 'day';
+        if (!usageMetricMeta[usageAnalyticsState.metric]) usageAnalyticsState.metric = 'requests';
 
         // 日志过滤设置
         function initLogFilter() {
@@ -1274,6 +1382,20 @@
             updateThemeIcon();
         }
 
+        function setGridCols(cols) {
+            cols = Math.max(2, Math.min(4, cols));
+            document.querySelector('.main-panel').style.setProperty('--grid-cols', cols);
+            localStorage.setItem('grid_cols', cols);
+            document.querySelectorAll('.col-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', Number(btn.dataset.cols) === cols);
+            });
+        }
+
+        function initGridCols() {
+            const saved = parseInt(localStorage.getItem('grid_cols') || '4', 10);
+            setGridCols(isNaN(saved) ? 4 : saved);
+        }
+
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
@@ -1291,7 +1413,13 @@
 
         // API 调用
         async function api(endpoint, opts = {}) {
-            const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+            const headers = { 'X-Panel-Request': '1', ...(opts.headers || {}) };
+            const panelKey = (localStorage.getItem('panel_key') || '').trim();
+            if (panelKey) headers['X-Panel-Key'] = panelKey;
+            const hasFormDataBody = typeof FormData !== 'undefined' && opts.body instanceof FormData;
+            if (!hasFormDataBody && !headers['Content-Type'] && opts.body !== undefined) {
+                headers['Content-Type'] = 'application/json';
+            }
 
             const controller = new AbortController();
             const timeoutMs = typeof opts.timeout === 'number' ? opts.timeout : 15000;
@@ -1299,6 +1427,20 @@
 
             try {
                 const res = await fetch(API + endpoint, { ...opts, headers, signal: controller.signal });
+                if (res.status === 401) {
+                    if (!panelKey) {
+                        const input = prompt('需要面板密钥（Panel Access Key）。请输入：');
+                        if (input && input.trim()) {
+                            localStorage.setItem('panel_key', input.trim());
+                            return await api(endpoint, opts);
+                        }
+                        toast('需要面板密钥才能访问', 'error');
+                    } else {
+                        localStorage.removeItem('panel_key');
+                        toast('面板密钥无效，请重新设置', 'error');
+                    }
+                    return null;
+                }
                 return await res.json().catch(() => null);
             } catch (e) {
                 if (e && e.name === 'AbortError') {
@@ -1312,6 +1454,17 @@
             }
         }
 
+        function initPanelKeyFromURL() {
+            try {
+                const url = new URL(window.location.href);
+                const key = (url.searchParams.get('panel_key') || '').trim();
+                if (!key) return;
+                localStorage.setItem('panel_key', key);
+                url.searchParams.delete('panel_key');
+                history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+            } catch (e) {}
+        }
+
         function formatMillionTokens(value) {
             const num = Number(value || 0);
             const formatted = (num / 1000000).toFixed(2);
@@ -1323,6 +1476,26 @@
             return `${(num / 1000000).toFixed(1)}`;
         }
 
+        function pickTokenUnit(value) {
+            const num = Math.max(0, Number(value || 0));
+            if (num >= 100000000) return { scale: 100000000, unit: '亿Tokens' };
+            if (num >= 10000000) return { scale: 10000000, unit: '千万Tokens' };
+            return { scale: 1000000, unit: '百万Tokens' };
+        }
+
+        function formatTokens(value, decimals = 2) {
+            const num = Number(value || 0);
+            const { scale, unit } = pickTokenUnit(num);
+            const formatted = (num / scale).toFixed(decimals);
+            return `<span class="req-inline-pair"><span class="req-token-number">${formatted}</span><span class="req-token-unit">${unit}</span></span>`;
+        }
+
+        function formatTokensShort(value, decimals = 1) {
+            const num = Number(value || 0);
+            const { scale } = pickTokenUnit(num);
+            return `${(num / scale).toFixed(decimals)}`;
+        }
+
         function formatUsd(value) {
             const num = Number(value || 0);
             const formatted = num.toFixed(2);
@@ -1332,6 +1505,82 @@
         function formatUsdShort(value) {
             const num = Number(value || 0);
             return `${num.toFixed(1)}`;
+        }
+
+        function getPricingBasisText(data) {
+            const basis = data && data.pricing_basis ? data.pricing_basis : null;
+            return (basis && basis.text) ? basis.text : '美元/百万Tokens';
+        }
+
+        function formatPricingNumber(value, digits = 3) {
+            return Number(value || 0).toFixed(digits);
+        }
+
+        function formatTokenAmountByBasis(value, data, decimals = 2) {
+            const basis = data && data.pricing_basis ? data.pricing_basis : null;
+            const scale = Number(basis && basis.tokens ? basis.tokens : 1000000);
+            return `${(Math.max(0, Number(value || 0)) / scale).toFixed(decimals)} ${(basis && basis.label) ? basis.label : '百万Tokens'}`;
+        }
+
+        function formatCountPlain(value) {
+            return Math.round(Number(value || 0)).toLocaleString('zh-CN');
+        }
+
+        function formatCountCompact(value) {
+            const num = Math.max(0, Number(value || 0));
+            if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+            if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+            return formatCountPlain(num);
+        }
+
+        function formatTokensPlain(value, decimals = 1) {
+            const num = Math.max(0, Number(value || 0));
+            const { scale, unit } = pickTokenUnit(num);
+            return `${(num / scale).toFixed(decimals)} ${unit}`;
+        }
+
+        function formatUsdPlain(value, decimals = 2) {
+            return `${Number(value || 0).toFixed(decimals)} 美元`;
+        }
+
+        function formatUsageMetricPlain(metric, value) {
+            if (metric === 'cost') return formatUsdPlain(value, 2);
+            if (metric === 'total_tokens') return formatTokensPlain(value, 1);
+            return formatCountPlain(value);
+        }
+
+        function formatUsageMetricCompact(metric, value) {
+            if (metric === 'cost') return Number(value || 0).toFixed(1);
+            if (metric === 'total_tokens') return formatTokensShort(value, 1);
+            return formatCountCompact(value);
+        }
+
+        function formatDurationCn(value) {
+            const total = Math.max(0, Math.round(Number(value || 0)));
+            if (total <= 0) return '0秒';
+            const days = Math.floor(total / 86400);
+            const hours = Math.floor((total % 86400) / 3600);
+            const mins = Math.floor((total % 3600) / 60);
+            const secs = total % 60;
+            if (days > 0) return `${days}天${hours}小时`;
+            if (hours > 0) return `${hours}小时${mins}分`;
+            if (mins > 0) return `${mins}分${secs}秒`;
+            return `${secs}秒`;
+        }
+
+        function formatDateTimeCn(value) {
+            if (!value) return '-';
+            try {
+                const date = new Date(value);
+                if (isNaN(date.getTime())) return String(value);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+            } catch (e) {
+                return String(value);
+            }
+        }
+
+        function renderAutoTime(text) {
+            return `<span class="time-emphasis">${escapeHtml(text)}</span>`;
         }
 
         function applySummarySizing(el) {
@@ -1353,137 +1602,7 @@
             input.value = value ?? 0;
         }
 
-        let quoteTimer = null;
-        let quoteTypingTimer = null;
-        let authorTypingTimer = null;
-        const quoteFontDefaults = { text: 15, author: 13 };
-        const quoteFontLimits = { min: 6, max: 40 };
-        const quoteFontState = { text: quoteFontDefaults.text, author: quoteFontDefaults.author };
 
-        function startTypewriter(el, text, opts = {}) {
-            if (!el) return null;
-            const speed = opts.speed || 35;
-            const scroll = opts.scroll || false;
-            const hscroll = opts.hscroll || false;
-            el.textContent = '';
-            el.scrollTop = 0;
-            el.scrollLeft = 0;
-            let idx = 0;
-            const timer = setInterval(() => {
-                idx += 1;
-                el.textContent = text.slice(0, idx);
-                if (scroll) {
-                    el.scrollTop = el.scrollHeight;
-                }
-                if (hscroll) {
-                    el.scrollLeft = el.scrollWidth;
-                }
-                if (idx >= text.length) {
-                    clearInterval(timer);
-                }
-            }, speed);
-            return timer;
-        }
-
-        function updateQuoteFontButtons() {
-            const textBtn = document.getElementById('quote-size-btn');
-            const authorBtn = document.getElementById('quote-author-size-btn');
-            if (textBtn) textBtn.textContent = `语录：${quoteFontState.text} px`;
-            if (authorBtn) authorBtn.textContent = `作者：${quoteFontState.author} px`;
-        }
-
-        function setQuoteFontSizes(textSize, authorSize) {
-            if (!Number.isFinite(textSize) || !Number.isFinite(authorSize)) return;
-            quoteFontState.text = textSize;
-            quoteFontState.author = authorSize;
-            document.documentElement.style.setProperty('--quote-font-size', `${textSize}px`);
-            document.documentElement.style.setProperty('--quote-author-size', `${authorSize}px`);
-            updateQuoteFontButtons();
-        }
-
-        function initQuoteFontSizes() {
-            const savedText = parseFloat(localStorage.getItem('quote_font_size'));
-            const savedAuthor = parseFloat(localStorage.getItem('quote_author_font_size'));
-            const textSize = Number.isFinite(savedText) ? savedText : quoteFontDefaults.text;
-            const authorSize = Number.isFinite(savedAuthor) ? savedAuthor : quoteFontDefaults.author;
-            setQuoteFontSizes(textSize, authorSize);
-        }
-
-        function adjustQuoteFont(type) {
-            const isAuthor = type === 'author';
-            const label = isAuthor ? '作者' : '语录';
-            const current = isAuthor ? quoteFontState.author : quoteFontState.text;
-            const raw = prompt(`请输入${label}字号(px)`, String(current));
-            if (raw === null) return;
-            const value = parseFloat(raw);
-            if (!Number.isFinite(value)) {
-                toast('请输入有效数字', 'error');
-                return;
-            }
-            const clamped = Math.max(quoteFontLimits.min, Math.min(quoteFontLimits.max, value));
-            if (isAuthor) {
-                quoteFontState.author = clamped;
-            } else {
-                quoteFontState.text = clamped;
-            }
-            localStorage.setItem('quote_font_size', quoteFontState.text);
-            localStorage.setItem('quote_author_font_size', quoteFontState.author);
-            setQuoteFontSizes(quoteFontState.text, quoteFontState.author);
-        }
-
-        async function loadQuote() {
-            const d = await api('/api/quote');
-            if (!d) return;
-            const text = d.text || '-';
-            const author = d.author || '-';
-            const textEl = document.getElementById('quote-text');
-            const authorEl = document.getElementById('quote-author');
-            if (quoteTypingTimer) clearInterval(quoteTypingTimer);
-            if (authorTypingTimer) clearInterval(authorTypingTimer);
-            quoteTypingTimer = startTypewriter(textEl, text, { speed: 25, scroll: true });
-            authorTypingTimer = startTypewriter(authorEl, author, { speed: 35 });
-        }
-
-        function refreshQuote() {
-            loadQuote();
-        }
-
-        async function addQuote() {
-            const line = prompt('请输入语录（格式：内容 出自：作者）');
-            if (!line) return;
-            const r = await api('/api/quote', {
-                method: 'POST',
-                body: JSON.stringify({ line })
-            });
-            if (r?.success) {
-                toast('语录已添加', 'success');
-                loadQuote();
-            } else {
-                toast(r?.error || '添加失败', 'error');
-            }
-        }
-
-        function updateQuoteInterval() {
-            const input = document.getElementById('quote-interval-input');
-            if (!input) return;
-            const minutes = Math.max(1, parseInt(input.value || '5', 10));
-            input.value = minutes;
-            localStorage.setItem('quote_refresh_minutes', minutes);
-            if (quoteTimer) clearInterval(quoteTimer);
-            quoteTimer = setInterval(loadQuote, minutes * 60 * 1000);
-        }
-
-        function initQuote() {
-            const input = document.getElementById('quote-interval-input');
-            const saved = parseInt(localStorage.getItem('quote_refresh_minutes') || '5', 10);
-            if (input) {
-                input.value = isNaN(saved) ? 5 : saved;
-                input.addEventListener('change', updateQuoteInterval);
-            }
-            initQuoteFontSizes();
-            loadQuote();
-            updateQuoteInterval();
-        }
 
         function initPricingInputs() {
             ['pricing-input', 'pricing-output', 'pricing-cache'].forEach((id) => {
@@ -1494,73 +1613,265 @@
             });
         }
 
-        // 从面板后端获取模型列表
-        async function loadModelsFromAPI() {
-            if (inflight.loadModelsFromAPI) return;
-            inflight.loadModelsFromAPI = true;
-            const list = document.getElementById('model-list');
-            const count = document.getElementById('model-count');
-            const headerModels = document.getElementById('header-models');
+        function initUpdateSettingsInputs() {
+            ['idle-input', 'check-interval-input'].forEach((id) => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                input.addEventListener('input', () => { updateSettingsDirty = true; });
+                input.addEventListener('change', () => { updateSettingsDirty = true; });
+                input.addEventListener('focus', () => { updateSettingsDirty = true; });
+            });
+        }
 
-            list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</div>';
 
-            try {
-                const data = await api('/api/models');
 
-                if (data && data.success && data.models && data.models.length > 0) {
-                    const models = data.models;
-                    count.textContent = `共 ${models.length} 个模型`;
-                    headerModels.textContent = models.length;
+        function setUsageBucket(bucket) {
+            if (!usageBucketMeta[bucket]) return;
+            usageAnalyticsState.bucket = bucket;
+            localStorage.setItem('usage_bucket', bucket);
+            renderUsageAnalytics();
+        }
 
-                    const groups = {
-                        Gemini: [],
-                        GPT: [],
-                        Claude: [],
-                        Qwen: [],
-                        其他: [],
-                    };
+        function setUsageMetric(metric) {
+            if (!usageMetricMeta[metric]) return;
+            const supportsCost = !!usageAnalyticsState.data?.meta?.supports_cost;
+            if (metric === 'cost' && !supportsCost) return;
+            usageAnalyticsState.metric = metric;
+            localStorage.setItem('usage_metric', metric);
+            renderUsageAnalytics();
+        }
 
-                    models.forEach(m => {
-                        const id = (m.id || m.name || 'unknown');
-                        const lower = id.toLowerCase();
-                        if (lower.includes('gemini')) groups.Gemini.push(m);
-                        else if (lower.includes('gpt')) groups.GPT.push(m);
-                        else if (lower.includes('claude')) groups.Claude.push(m);
-                        else if (lower.includes('qwen')) groups.Qwen.push(m);
-                        else groups.其他.push(m);
-                    });
+        function updateUsageAnalyticsControls() {
+            document.querySelectorAll('#usage-bucket-controls [data-bucket]').forEach((btn) => {
+                btn.classList.toggle('active', btn.dataset.bucket === usageAnalyticsState.bucket);
+            });
 
-                    list.innerHTML = Object.entries(groups).map(([groupName, items]) => {
-                        if (!items.length) return '';
-                        const itemsHtml = items.map(m => `
-                            <div class="model-item">
-                                <div>
-                                    <div class="model-name">${escapeHtml(m.id || m.name || 'unknown')}</div>
-                                    <div class="model-provider">Owner: ${escapeHtml(m.owned_by || m.provider || 'unknown')}</div>
-                                </div>
-                                <span class="badge info">${m.object || 'model'}</span>
-                            </div>
-                        `).join('');
-                        return `
-                            <details class="model-group" open>
-                                <summary>${groupName}（${items.length}）</summary>
-                                <div class="model-group-list">${itemsHtml}</div>
-                            </details>
-                        `;
-                    }).join('');
-                } else {
-                    list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">未找到模型</div>';
-                    count.textContent = '共 0 个模型';
-                    headerModels.textContent = '0';
+            const supportsCost = !!usageAnalyticsState.data?.meta?.supports_cost;
+            document.querySelectorAll('#usage-metric-controls [data-metric]').forEach((btn) => {
+                const isCost = btn.dataset.metric === 'cost';
+                btn.disabled = isCost && !supportsCost;
+                btn.classList.toggle('active', btn.dataset.metric === usageAnalyticsState.metric);
+                btn.title = isCost && !supportsCost ? '当前 usage snapshot 未提供逐条明细，无法绘制历史费用' : '';
+            });
+        }
+
+        async function loadUsageAnalytics(force = false) {
+            if (inflight.usageAnalytics) return;
+            inflight.usageAnalytics = true;
+            const d = await api('/api/usage/analytics', { timeout: 30000 });
+            if (d && d.success) {
+                usageAnalyticsState.data = d;
+                if (!d.meta?.supports_cost && usageAnalyticsState.metric === 'cost') {
+                    usageAnalyticsState.metric = 'requests';
+                    localStorage.setItem('usage_metric', usageAnalyticsState.metric);
                 }
-            } catch (e) {
-                console.error('获取模型失败:', e);
-                list.innerHTML = '<div style="text-align:center;color:var(--danger);padding:20px;">获取模型失败</div>';
-                count.textContent = '共 0 个模型';
-                headerModels.textContent = '0';
-            } finally {
-                inflight.loadModelsFromAPI = false;
+            } else if (!usageAnalyticsState.data || force) {
+                usageAnalyticsState.data = null;
             }
+            renderUsageAnalytics();
+            inflight.usageAnalytics = false;
+        }
+
+        function renderUsageAnalytics() {
+            updateUsageAnalyticsControls();
+            const data = usageAnalyticsState.data;
+            const bucketPayload = data?.analytics?.[usageAnalyticsState.bucket];
+            const subtitleEl = document.getElementById('usage-analytics-subtitle');
+            const stampEl = document.getElementById('usage-analytics-stamp');
+            const totalEl = document.getElementById('usage-range-total');
+            const peakEl = document.getElementById('usage-range-peak');
+            const accountsEl = document.getElementById('usage-range-accounts');
+            const noteEl = document.getElementById('usage-chart-note');
+            const accountNoteEl = document.getElementById('usage-account-note');
+
+            if (!data || !bucketPayload) {
+                if (subtitleEl) subtitleEl.textContent = '按小时 / 天 / 月查看 usage 趋势，并同步展示账号分布';
+                if (stampEl) stampEl.textContent = '暂无数据';
+                if (totalEl) totalEl.textContent = '-';
+                if (peakEl) peakEl.textContent = '-';
+                if (accountsEl) accountsEl.textContent = '-';
+                if (noteEl) noteEl.textContent = '未能获取 usage analytics。';
+                if (accountNoteEl) accountNoteEl.textContent = '账号维度不可用';
+                renderUsageTrendChart(null);
+                renderUsageAccountBars(null);
+                return;
+            }
+
+            const metric = usageAnalyticsState.metric;
+            const metricLabel = usageMetricMeta[metric]?.label || metric;
+            const points = Array.isArray(bucketPayload.points) ? bucketPayload.points : [];
+            const activeAccounts = (bucketPayload.accounts || []).filter((item) => Number(item.requests || 0) > 0).length;
+            const peakPoint = points.reduce((best, point) => {
+                const currentValue = Number(point?.[metric] || 0);
+                const bestValue = Number(best?.[metric] || 0);
+                return currentValue > bestValue ? point : best;
+            }, null);
+
+            if (subtitleEl) {
+                subtitleEl.textContent = `${usageBucketMeta[usageAnalyticsState.bucket]?.label || usageAnalyticsState.bucket}粒度 | ${metricLabel} | ${bucketPayload.range_label || ''}`;
+            }
+            if (stampEl) {
+                stampEl.textContent = `更新于 ${formatDateTimeCn(data.generated_at)}`;
+            }
+            if (totalEl) {
+                totalEl.textContent = formatUsageMetricPlain(metric, bucketPayload.totals?.[metric] || 0);
+            }
+            if (peakEl) {
+                peakEl.textContent = peakPoint ? `${peakPoint.label} · ${formatUsageMetricCompact(metric, peakPoint[metric] || 0)}` : '-';
+            }
+            if (accountsEl) {
+                accountsEl.textContent = data.meta?.has_account_dimension ? String(activeAccounts) : 'N/A';
+            }
+
+            const chartNotes = [];
+            if (metric === 'cost') {
+                chartNotes.push(`费用按当前生效价格计算：${getPricingBasisText(data)}`);
+            }
+            (data.meta?.notes || []).forEach((note) => chartNotes.push(note));
+            if (noteEl) {
+                noteEl.textContent = chartNotes.join('；') || '当前范围内的 usage 趋势。';
+            }
+            if (accountNoteEl) {
+                accountNoteEl.textContent = data.meta?.has_account_dimension
+                    ? `当前范围内活跃账号 ${activeAccounts} 个`
+                    : '当前 usage snapshot 未暴露账号维度';
+            }
+
+            renderUsageTrendChart(bucketPayload);
+            renderUsageAccountBars(bucketPayload);
+        }
+
+        function renderUsageTrendChart(bucketPayload) {
+            const svg = document.getElementById('usage-trend-chart');
+            const emptyEl = document.getElementById('usage-chart-empty');
+            if (!svg || !emptyEl) return;
+
+            const points = Array.isArray(bucketPayload?.points) ? bucketPayload.points : [];
+            if (!points.length) {
+                svg.innerHTML = '';
+                emptyEl.textContent = '暂无 usage 数据';
+                emptyEl.classList.add('show');
+                return;
+            }
+
+            const metric = usageAnalyticsState.metric;
+            const values = points.map((point) => Number(point?.[metric] || 0));
+            const maxValue = Math.max(...values, 0);
+            if (maxValue <= 0) {
+                svg.innerHTML = '';
+                emptyEl.textContent = '当前范围暂无使用记录';
+                emptyEl.classList.add('show');
+                return;
+            }
+
+            emptyEl.classList.remove('show');
+            const width = 760;
+            const height = 240;
+            const padding = { top: 16, right: 20, bottom: 30, left: 46 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            const yMax = maxValue * 1.12;
+            const xStep = points.length > 1 ? chartWidth / (points.length - 1) : 0;
+
+            const coords = points.map((point, index) => {
+                const value = Number(point?.[metric] || 0);
+                const x = padding.left + xStep * index;
+                const y = padding.top + chartHeight - (value / yMax) * chartHeight;
+                return { ...point, value, x, y };
+            });
+
+            const linePath = coords.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
+            const areaPath = `${linePath} L ${coords[coords.length - 1].x.toFixed(2)} ${(padding.top + chartHeight).toFixed(2)} L ${coords[0].x.toFixed(2)} ${(padding.top + chartHeight).toFixed(2)} Z`;
+            const gridLines = [0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                const y = padding.top + chartHeight * ratio;
+                const labelValue = yMax * (1 - ratio);
+                return `
+                    <line x1="${padding.left}" y1="${y.toFixed(2)}" x2="${(padding.left + chartWidth).toFixed(2)}" y2="${y.toFixed(2)}" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="3 5"></line>
+                    <text x="${padding.left - 8}" y="${(y + 4).toFixed(2)}" text-anchor="end" fill="var(--text-muted)" font-size="10">${escapeHtml(formatUsageMetricCompact(metric, labelValue))}</text>
+                `;
+            }).join('');
+
+            const labelIndices = new Set([0, coords.length - 1]);
+            const tickStep = Math.max(1, Math.floor(coords.length / 5));
+            coords.forEach((_, index) => {
+                if (index % tickStep === 0) labelIndices.add(index);
+            });
+            const xLabels = coords.filter((_, index) => labelIndices.has(index)).map((point) => `
+                <text x="${point.x.toFixed(2)}" y="${(height - 8).toFixed(2)}" text-anchor="middle" fill="var(--text-muted)" font-size="10">${escapeHtml(point.label || '')}</text>
+            `).join('');
+
+            const pointsMarkup = coords.map((point, index) => {
+                const radius = index === coords.length - 1 ? 4 : 2.5;
+                const opacity = index === coords.length - 1 ? 1 : 0.75;
+                return `<circle cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="${radius}" fill="#7aa0bc" opacity="${opacity}"></circle>`;
+            }).join('');
+
+            const lastPoint = coords[coords.length - 1];
+            svg.innerHTML = `
+                <defs>
+                    <linearGradient id="usageAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#7aa0bc" stop-opacity="0.42"></stop>
+                        <stop offset="100%" stop-color="#7aa0bc" stop-opacity="0.02"></stop>
+                    </linearGradient>
+                </defs>
+                ${gridLines}
+                <path d="${areaPath}" fill="url(#usageAreaGradient)"></path>
+                <path d="${linePath}" fill="none" stroke="#7aa0bc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                ${pointsMarkup}
+                ${xLabels}
+                <text x="${(padding.left + 4).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" fill="var(--text-secondary)" font-size="11">${escapeHtml(usageMetricMeta[metric]?.label || metric)}</text>
+                <text x="${(width - padding.right).toFixed(2)}" y="${(padding.top + 12).toFixed(2)}" text-anchor="end" fill="var(--text-secondary)" font-size="11">最新 ${escapeHtml(formatUsageMetricPlain(metric, lastPoint.value))}</text>
+            `;
+        }
+
+        function renderUsageAccountBars(bucketPayload) {
+            const container = document.getElementById('usage-account-bars');
+            if (!container) return;
+
+            const metric = usageAnalyticsState.metric;
+            const accounts = Array.isArray(bucketPayload?.accounts) ? [...bucketPayload.accounts] : [];
+            if (!accounts.length) {
+                container.innerHTML = '<div class="usage-account-empty">当前范围暂无账号 usage 分布</div>';
+                return;
+            }
+
+            accounts.sort((a, b) => {
+                const diff = Number(b?.[metric] || 0) - Number(a?.[metric] || 0);
+                if (diff !== 0) return diff;
+                return Number(b?.requests || 0) - Number(a?.requests || 0);
+            });
+
+            const top = accounts.filter((item) => Number(item?.[metric] || 0) > 0).slice(0, 8);
+            if (!top.length) {
+                container.innerHTML = '<div class="usage-account-empty">当前指标下暂无账号 usage 分布</div>';
+                return;
+            }
+
+            const maxValue = Math.max(...top.map((item) => Number(item?.[metric] || 0)), 1);
+            container.innerHTML = top.map((item) => {
+                const shareKey = metric === 'cost' ? 'share_cost' : metric === 'total_tokens' ? 'share_tokens' : 'share_requests';
+                const share = Math.max(0, Number(item?.[shareKey] || 0));
+                const width = Math.max(4, (Number(item?.[metric] || 0) / maxValue) * 100);
+                const subParts = [item.provider, item.account || item.email].filter(Boolean);
+                const subLabel = subParts.length ? subParts.join(' · ') : (item.matched ? 'runtime auth' : 'raw auth_index');
+                return `
+                    <div class="usage-account-row">
+                        <div class="usage-account-row-head">
+                            <div class="usage-account-label">
+                                <span class="usage-account-name">${escapeHtml(item.label || item.id || 'Unknown')}</span>
+                                <span class="usage-account-sub">${escapeHtml(subLabel)}</span>
+                            </div>
+                            <div class="usage-account-value">
+                                ${escapeHtml(formatUsageMetricPlain(metric, item?.[metric] || 0))}
+                                <span class="usage-account-share">${escapeHtml((share * 100).toFixed(1))}%</span>
+                            </div>
+                        </div>
+                        <div class="usage-account-track">
+                            <div class="usage-account-fill" style="width:${width.toFixed(2)}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // 状态刷新
@@ -1569,6 +1880,7 @@
             inflight.refreshStatus = true;
             const d = await api('/api/status');
             if (!d) { inflight.refreshStatus = false; return; }
+            configWriteEnabled = d.config?.write_enabled !== false;
 
             const running = d.service.running;
 
@@ -1587,6 +1899,13 @@
             document.getElementById('header-status-dot').className = 'header-stat-dot ' + (running ? 'green' : 'red');
             document.getElementById('header-version').textContent = d.version.current;
             document.getElementById('header-requests').textContent = d.requests.count;
+            if (d.panel) {
+                if (d.panel.name && d.panel.version) {
+                    document.title = `${d.panel.name} 管理面板 ${d.panel.version}`;
+                } else if (d.panel.name) {
+                    document.title = `${d.panel.name} 管理面板`;
+                }
+            }
 
             const healthDot = document.getElementById('header-health-dot');
             const healthColors = { healthy: 'green', degraded: 'orange', unhealthy: 'red' };
@@ -1619,19 +1938,45 @@
             }
 
             const inputTokens = d.requests.input_tokens || 0;
+            const billableInputTokens = d.requests.billable_input_tokens || 0;
             const outputTokens = d.requests.output_tokens || 0;
             const cacheTokens = d.requests.cached_tokens || 0;
-            const totalTokens = d.requests.total_tokens || (inputTokens + outputTokens + cacheTokens);
-            document.getElementById('req-input-tokens').innerHTML = `输入：${formatMillionTokens(inputTokens)}`;
-            document.getElementById('req-output-tokens').innerHTML = `输出：${formatMillionTokens(outputTokens)}`;
-            document.getElementById('req-cache-tokens').innerHTML = `缓存：${formatMillionTokens(cacheTokens)}`;
-            document.getElementById('req-total-tokens').textContent = formatMillionShort(totalTokens);
+            const totalTokens = d.requests.total_tokens || (inputTokens + outputTokens);
+            document.getElementById('req-input-tokens').innerHTML = `输入（含缓存）：${formatTokens(inputTokens)}`;
+            document.getElementById('req-output-tokens').innerHTML = `输出：${formatTokens(outputTokens)}`;
+            document.getElementById('req-cache-tokens').innerHTML = `缓存：${formatTokens(cacheTokens)}`;
+            document.getElementById('req-total-tokens').textContent = formatTokensShort(totalTokens);
+            const unitEl = document.getElementById('req-total-tokens-unit');
+            if (unitEl) unitEl.textContent = pickTokenUnit(totalTokens).unit;
 
             if (d.usage_costs) {
                 document.getElementById('req-input-cost').innerHTML = formatUsd(d.usage_costs.input || 0);
                 document.getElementById('req-output-cost').innerHTML = formatUsd(d.usage_costs.output || 0);
                 document.getElementById('req-cache-cost').innerHTML = formatUsd(d.usage_costs.cache || 0);
                 document.getElementById('req-total-cost').textContent = formatUsdShort(d.usage_costs.total || 0);
+            }
+            const pricingBasisText = getPricingBasisText(d);
+            const usageCostBasisInfoEl = document.getElementById('usage-cost-basis-info');
+            if (usageCostBasisInfoEl) {
+                usageCostBasisInfoEl.textContent = `费用按 ${pricingBasisText} 计算`;
+            }
+            const usageCostBreakdownInfoEl = document.getElementById('usage-cost-breakdown-info');
+            if (usageCostBreakdownInfoEl) {
+                usageCostBreakdownInfoEl.textContent = `当前计费输入：${formatTokenAmountByBasis(billableInputTokens, d)}；缓存命中：${formatTokenAmountByBasis(cacheTokens, d)}（单独按缓存价计算）`;
+            }
+            const pricingCurrentTitleEl = document.getElementById('pricing-current-title');
+            if (pricingCurrentTitleEl) {
+                pricingCurrentTitleEl.textContent = `当前生效价格（${pricingBasisText}）`;
+            }
+            const effectiveInputEl = document.getElementById('effective-pricing-input');
+            if (effectiveInputEl) effectiveInputEl.textContent = formatPricingNumber(d.pricing?.input);
+            const effectiveOutputEl = document.getElementById('effective-pricing-output');
+            if (effectiveOutputEl) effectiveOutputEl.textContent = formatPricingNumber(d.pricing?.output);
+            const effectiveCacheEl = document.getElementById('effective-pricing-cache');
+            if (effectiveCacheEl) effectiveCacheEl.textContent = formatPricingNumber(d.pricing?.cache);
+            const pricingBasisInfoEl = document.getElementById('pricing-basis-info');
+            if (pricingBasisInfoEl) {
+                pricingBasisInfoEl.textContent = `计价口径：${pricingBasisText}（固定，不随上方 Token 单位切换）`;
             }
 
             applySummarySizing(document.getElementById('req-count'));
@@ -1646,83 +1991,113 @@
                 }
                 pricingInitialized = true;
             }
+            const pmeta = d.pricing_meta || {};
+            const pricingAutoEnabled = !!pmeta.auto_enabled;
+            const pSw = document.getElementById('pricing-auto-switch');
+            const pLabel = document.getElementById('pricing-auto-label');
+            if (pSw && pLabel) {
+                if (pricingAutoEnabled) {
+                    pSw.classList.add('on');
+                    pLabel.textContent = '已开启';
+                } else {
+                    pSw.classList.remove('on');
+                    pLabel.textContent = '已关闭';
+                }
+            }
+            const pInfo = document.getElementById('pricing-source-info');
+            if (pInfo) {
+                const mode = pmeta.mode || (pricingAutoEnabled ? 'auto' : 'manual');
+                const src = pmeta.source || (pricingAutoEnabled ? (pmeta.auto_source || 'openrouter') : 'manual');
+                const model = pmeta.model || pmeta.auto_model || '';
+                if (!pricingAutoEnabled) {
+                    pInfo.textContent = '来源：手动（自动同步已关闭）';
+                } else if (mode === 'manual') {
+                    pInfo.textContent = '来源：手动（自动同步已开启）';
+                } else if (mode === 'mixed') {
+                    pInfo.textContent = `来源：混合（${src}${model ? '：' + model : ''}；手动值优先）`;
+                } else {
+                    pInfo.textContent = `来源：${src}${model ? '：' + model : ''}`;
+                }
+            }
 
             // 自动更新开关
             const sw = document.getElementById('auto-switch');
             const label = document.getElementById('auto-label');
             if (d.update.auto_enabled) { sw.classList.add('on'); label.textContent = '已开启'; }
             else { sw.classList.remove('on'); label.textContent = '已关闭'; }
-            document.getElementById('idle-input').value = Math.round(d.config.idle_threshold / 60);
-            // 检查间隔 (如果后端支持)
-            if (d.config.check_interval) {
-                document.getElementById('check-interval-input').value = Math.round(d.config.check_interval / 60);
+            const idleInputEl = document.getElementById('idle-input');
+            const checkIntervalEl = document.getElementById('check-interval-input');
+            const editingIdle = document.activeElement === idleInputEl;
+            const editingCheck = document.activeElement === checkIntervalEl;
+            if (!updateSettingsDirty && !editingIdle && idleInputEl && typeof d.config.idle_threshold === 'number') {
+                idleInputEl.value = Math.round(d.config.idle_threshold / 60);
+            }
+            if (!updateSettingsDirty && !editingCheck && checkIntervalEl && typeof d.config.check_interval === 'number') {
+                checkIntervalEl.value = Math.round(d.config.check_interval / 60);
+            }
+            if (updateSettingsDirty && !editingIdle && !editingCheck && idleInputEl && checkIntervalEl
+                && typeof d.config.idle_threshold === 'number' && typeof d.config.check_interval === 'number') {
+                const idleLocal = parseInt(idleInputEl.value || '0', 10);
+                const checkLocal = parseInt(checkIntervalEl.value || '0', 10);
+                const idleServer = Math.round(d.config.idle_threshold / 60);
+                const checkServer = Math.round(d.config.check_interval / 60);
+                if (!isNaN(idleLocal) && !isNaN(checkLocal) && idleLocal === idleServer && checkLocal === checkServer) {
+                    updateSettingsDirty = false;
+                }
             }
 
-            // 健康状态
-            document.getElementById('health-overall').textContent = d.health === 'healthy' ? '健康' : d.health === 'degraded' ? '警告' : d.health === 'unhealthy' ? '异常' : d.health;
+            const autoStatus = d.update?.status || {};
+            const autoIdle = autoStatus.idle || {};
+            const autoStatusLine = document.getElementById('auto-status-line');
+            const autoStatusDetail = document.getElementById('auto-status-detail');
+            if (autoStatusLine) {
+                let statusText = autoStatus.summary || '等待状态更新';
+                let statusClass = 'info';
+                const phase = autoStatus.phase || 'unknown';
+                if (phase === 'disabled' || phase === 'wait_idle' || phase === 'wait_check') {
+                    statusClass = 'warning';
+                } else if (phase === 'updating') {
+                    statusClass = 'warning';
+                } else if (phase === 'no_update' || phase === 'ready') {
+                    statusClass = 'success';
+                }
+                autoStatusLine.className = `badge ${statusClass}`;
+                autoStatusLine.textContent = statusText;
+            }
+            if (autoStatusDetail) {
+                const detailParts = [];
+                if (autoStatus.has_update) {
+                    detailParts.push(`发现新版本：${escapeHtml(d.version.current)} → ${escapeHtml(d.version.latest)}`);
+                } else {
+                    detailParts.push('当前没有可安装的新版本');
+                }
+                if (autoIdle.last_request_time) {
+                    if (autoIdle.is_idle) {
+                        detailParts.push(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，已空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_for_seconds || 0))}`);
+                    } else {
+                        detailParts.push(`最近请求在 ${escapeHtml(autoIdle.last_request_time)}，还需空闲 ${renderAutoTime(formatDurationCn(autoIdle.idle_wait_seconds || 0))}`);
+                    }
+                } else {
+                    detailParts.push('暂无请求记录，当前视为空闲');
+                }
+                if (d.update.auto_enabled && typeof autoStatus.next_check_in_seconds === 'number') {
+                    detailParts.push(`下一次自动检查约在 ${renderAutoTime(formatDurationCn(autoStatus.next_check_in_seconds))} 后`);
+                }
+                if (autoStatus.last_check_time) {
+                    detailParts.push(`上次自动检查时间：${escapeHtml(formatDateTimeCn(autoStatus.last_check_time))}`);
+                }
+                autoStatusDetail.innerHTML = detailParts.join('；');
+            }
+
+            const healthOverallEl = document.getElementById('health-overall');
+            if (healthOverallEl) {
+                healthOverallEl.textContent = d.health === 'healthy' ? '健康' : d.health === 'degraded' ? '警告' : d.health === 'unhealthy' ? '异常' : d.health;
+            }
 
             inflight.refreshStatus = false;
         }
 
-        async function refreshResources() {
-            if (inflight.refreshResources) return;
-            inflight.refreshResources = true;
-            const d = await api('/api/resources');
-            if (!d || d.error) { inflight.refreshResources = false; return; }
 
-            // CPU
-            document.getElementById('cpu-percent').textContent = d.cpu.percent.toFixed(1) + '%';
-            document.getElementById('cpu-bar').style.width = d.cpu.percent + '%';
-            document.getElementById('cpu-bar').className = 'progress-fill ' + (d.cpu.percent > 80 ? 'red' : d.cpu.percent > 60 ? 'orange' : 'blue');
-
-            // CPU详细信息
-            const cpuFreq = d.cpu.freq_current ? Math.round(d.cpu.freq_current) + ' MHz' : '-';
-            document.getElementById('cpu-detail').textContent = `${d.cpu.cores || '-'} 核心 | ${cpuFreq}`;
-            document.getElementById('cpu-load-1m').textContent = (d.cpu.load_1m || 0).toFixed(2);
-            document.getElementById('cpu-load-5m').textContent = (d.cpu.load_5m || 0).toFixed(2);
-            document.getElementById('cpu-load-15m').textContent = (d.cpu.load_15m || 0).toFixed(2);
-
-            if (d.system) {
-                document.getElementById('cpu-model').textContent = `CPU 型号：${d.system.cpu_model || '-'}`;
-                document.getElementById('cloud-vendor').textContent = `云厂商：${d.system.cloud_vendor || '-'}`;
-                document.getElementById('os-version').textContent = `系统版本：${d.system.os_version || '-'}`;
-            }
-
-            // 内存
-            const memUsed = (d.memory.used / 1024 / 1024 / 1024).toFixed(2);
-            const memTotal = (d.memory.total / 1024 / 1024 / 1024).toFixed(2);
-            document.getElementById('mem-percent').textContent = d.memory.percent.toFixed(1) + '%';
-            document.getElementById('mem-detail').textContent = `${memUsed} GB / ${memTotal} GB`;
-            document.getElementById('mem-bar').style.width = d.memory.percent + '%';
-            document.getElementById('mem-bar').className = 'progress-fill ' + (d.memory.percent > 80 ? 'red' : d.memory.percent > 60 ? 'orange' : 'purple');
-
-            // 内存详细信息
-            const memAvail = (d.memory.available / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-            const memCached = d.memory.cached ? ((d.memory.cached / 1024 / 1024 / 1024).toFixed(2) + ' GB') : '-';
-            const swapPercent = d.memory.swap_percent || 0;
-            const swapTotal = d.memory.swap_total || 0;
-            const swapTotalGB = (swapTotal / 1024 / 1024 / 1024).toFixed(2);
-            document.getElementById('mem-available').textContent = memAvail;
-            document.getElementById('mem-cached').textContent = memCached;
-            document.getElementById('mem-swap').textContent = swapTotal === 0 ? '未配置' : `${swapPercent.toFixed(1)}% / ${swapTotalGB} GB`;
-
-            if (d.cliproxy) {
-                const clipCpu = d.cliproxy.cpu_percent || 0;
-                const clipMem = d.cliproxy.memory_bytes || 0;
-                document.getElementById('cliproxy-cpu').textContent = `${clipCpu.toFixed(1)}%`;
-                document.getElementById('cliproxy-mem').textContent = `${(clipMem / 1024 / 1024).toFixed(1)} MB`;
-            }
-
-            // 磁盘
-            const diskUsed = (d.disk.used / 1024 / 1024 / 1024).toFixed(1);
-            const diskTotal = (d.disk.total / 1024 / 1024 / 1024).toFixed(1);
-            document.getElementById('disk-percent').textContent = d.disk.percent.toFixed(1) + '%';
-            document.getElementById('disk-detail').textContent = `${diskUsed}GB / ${diskTotal}GB (${d.disk.path || '/'})`;
-            document.getElementById('disk-bar').style.width = d.disk.percent + '%';
-            document.getElementById('disk-bar').className = 'progress-fill ' + (d.disk.percent > 80 ? 'red' : d.disk.percent > 60 ? 'orange' : 'orange');
-
-            inflight.refreshResources = false;
-        }
 
         async function clearStats() {
             if (!confirm('确定要清空所有请求统计数据吗？')) return;
@@ -1731,6 +2106,7 @@
                 if (r && r.success) {
                     toast('统计数据已清空', 'success');
                     refreshStatus();
+                    loadUsageAnalytics(true);
                 } else {
                     toast('清空失败: ' + (r && r.message ? r.message : '未知错误'), 'error');
                 }
@@ -1757,6 +2133,7 @@
                 setPricingValue('pricing-cache', pricing.cache, true);
                 toast('价格已保存', 'success');
                 refreshStatus();
+                loadUsageAnalytics(true);
             } else {
                 toast('保存失败', 'error');
             }
@@ -1927,10 +2304,9 @@
         function refreshAll() {
             refreshStatus();
             refreshCliLogs();
-            refreshResources();
             getRouting();
-            loadModelsFromAPI();
             refreshUpdateHistory();
+            loadUsageAnalytics();
         }
 
         // 获取更新历史
@@ -1977,7 +2353,7 @@
                     else if (u.hours_ago < 1) t = Math.round(u.hours_ago * 60) + '分钟前';
                     else if (u.hours_ago < 24) t = u.hours_ago.toFixed(1) + '小时前';
                     else t = (u.hours_ago / 24).toFixed(1) + '天前';
-                    return `<span style="margin-right:8px;">${u.version}: ${t}</span>`;
+                    return `<span style="margin-right:8px;">${escapeHtml(u.version || '-')} : ${escapeHtml(t)}</span>`;
                 }).join('');
                 document.getElementById('recent-updates').innerHTML = '历史: ' + recentHtml;
             } else {
@@ -2014,6 +2390,19 @@
             if (r?.success) {
                 sw.classList.toggle('on');
                 document.getElementById('auto-label').textContent = sw.classList.contains('on') ? '已开启' : '已关闭';
+            }
+        }
+
+        async function togglePricingAuto() {
+            const sw = document.getElementById('pricing-auto-switch');
+            if (!sw) return;
+            const on = sw.classList.contains('on');
+            const r = await api('/api/config/pricing-auto', { method: 'POST', body: JSON.stringify({ enabled: !on }) });
+            if (r?.success) {
+                refreshStatus();
+                loadUsageAnalytics(true);
+            } else {
+                toast(r?.error || r?.message || '切换失败', 'error');
             }
         }
 
@@ -2056,6 +2445,7 @@
             }
 
             if (idleSaved && checkSaved) {
+                updateSettingsDirty = false;
                 toast('设置已保存', 'success');
             } else if (idleSaved || checkSaved) {
                 const reason = (!idleSaved ? (r1?.error || r1?.message || '空闲阈值保存失败') : '')
@@ -2069,6 +2459,10 @@
         }
 
         async function setRouting() {
+            if (!configWriteEnabled) {
+                toast('当前面板已禁用配置写入，路由策略不会再写回线上配置', 'warning');
+                return;
+            }
             const strategy = document.getElementById('routing-select').value;
             const r = await api('/api/config/routing', { method: 'POST', body: JSON.stringify({ strategy }) });
             toast(r?.success ? r.message : '设置失败', r?.success ? 'success' : 'error');
@@ -2097,11 +2491,17 @@
             if (!r) {
                 el.innerHTML = '<div style="color:var(--danger);">验证请求失败</div>';
             } else if (r.valid) {
+                const warningsHtml = (r.warnings || [])
+                    .map(w => `<div style="font-size:12px;margin-top:4px;">• ${escapeHtml(w)}</div>`)
+                    .join('');
                 el.innerHTML = `<div style="color:var(--success);font-size:18px;text-align:center;padding:20px;">✓ 配置格式有效</div>` +
-                    (r.warnings.length ? `<div style="margin-top:10px;"><div style="color:var(--warning);font-weight:600;">警告:</div>${r.warnings.map(w => `<div style="font-size:12px;margin-top:4px;">• ${w}</div>`).join('')}</div>` : '');
+                    (warningsHtml ? `<div style="margin-top:10px;"><div style="color:var(--warning);font-weight:600;">警告:</div>${warningsHtml}</div>` : '');
             } else {
+                const errorsHtml = (r.errors || [])
+                    .map(e => `<div style="font-size:12px;margin-top:4px;">• ${escapeHtml(e)}</div>`)
+                    .join('');
                 el.innerHTML = `<div style="color:var(--danger);font-size:18px;text-align:center;padding:20px;">✗ 配置格式无效</div>` +
-                    `<div style="margin-top:10px;"><div style="color:var(--danger);font-weight:600;">错误:</div>${r.errors.map(e => `<div style="font-size:12px;margin-top:4px;">• ${e}</div>`).join('')}</div>`;
+                    `<div style="margin-top:10px;"><div style="color:var(--danger);font-weight:600;">错误:</div>${errorsHtml}</div>`;
             }
             document.getElementById('validate-modal').classList.add('active');
         }
@@ -2111,21 +2511,26 @@
             document.getElementById('validate-modal').classList.remove('active');
         }
 
-        function exportData(type) {
-            window.location.href = API + '/api/export/' + type;
-        }
-
         async function loadConfig() {
             const r = await api('/api/config');
             if (r?.success) {
-                document.getElementById('config-editor').value = r.content;
+                const editor = document.getElementById('config-editor');
+                editor.value = r.content;
+                editor.readOnly = !configWriteEnabled;
                 document.getElementById('config-modal').classList.add('active');
+                if (!configWriteEnabled) {
+                    toast('当前配置区为只读模式，只能查看，不能写回线上配置', 'warning');
+                }
             } else {
                 toast('加载配置失败', 'error');
             }
         }
 
         async function saveConfig() {
+            if (!configWriteEnabled) {
+                toast('当前面板已禁用配置写入，不会修改线上配置', 'warning');
+                return;
+            }
             const content = document.getElementById('config-editor').value;
             if (!content.trim()) { toast('配置内容为空', 'error'); return; }
             const r = await api('/api/config', { method: 'POST', body: JSON.stringify({ content }) });
@@ -2151,21 +2556,21 @@
             }, 3000);
         }
 
-        // 初始化
+        initPanelKeyFromURL();
         initTheme();
+        initGridCols();
         initLogFilter();
-        initQuote();
         initPricingInputs();
+        initUpdateSettingsInputs();
         refreshAll();
-        // 每5秒刷新一次状态和资源监控
+        // 每5秒刷新一次状态
         setInterval(() => {
             refreshStatus();
-            refreshResources();
         }, 5000);
         // 每10秒刷新日志
         setInterval(refreshCliLogs, 10000);
-        // 每60秒刷新模型列表
-        setInterval(loadModelsFromAPI, 60000);
+        // 每60秒刷新 usage analytics
+        setInterval(loadUsageAnalytics, 60000);
     </script>
     <script src="i18n.js"></script>
 </body>

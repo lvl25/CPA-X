@@ -1,0 +1,38 @@
+services:
+  cpax-panel:
+    build: .
+    container_name: cpax-panel
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      CLIPROXY_PANEL_BIND_HOST: "0.0.0.0"
+      CLIPROXY_PANEL_PANEL_PORT: "8080"
+      CLIPROXY_PANEL_PANEL_THREADS: "8"
+
+      # 本地 hardened 版本要求显式管理员口令
+      CLIPROXY_PANEL_PANEL_USERNAME: "${CLIPROXY_PANEL_PANEL_USERNAME:?set CLIPROXY_PANEL_PANEL_USERNAME}"
+      CLIPROXY_PANEL_PANEL_PASSWORD: "${CLIPROXY_PANEL_PANEL_PASSWORD:?set CLIPROXY_PANEL_PANEL_PASSWORD}"
+
+      # 可选：额外的 API 访问密钥
+      # CLIPROXY_PANEL_PANEL_ACCESS_KEY: "change-me"
+
+      # 让面板访问宿主机上的 CLIProxyAPI
+      CLIPROXY_PANEL_CLIPROXY_API_BASE: "http://host.docker.internal"
+      CLIPROXY_PANEL_CLIPROXY_API_PORT: "8317"
+
+      # 可选：提高 GitHub Release 检查限流额度
+      # CLIPROXY_PANEL_GITHUB_TOKEN: ""
+
+      # 容器模式建议关闭自动更新和主配置写回
+      CLIPROXY_PANEL_AUTO_UPDATE_ENABLED: "false"
+      CLIPROXY_PANEL_CONFIG_WRITE_ENABLED: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/app/data
+
+      # 按需挂载
+      # - /path/on/host/config.yaml:/mnt/cliproxy/config.yaml:ro
+      # - /path/on/host/main.log:/mnt/cliproxy/main.log:ro
+      # - /path/on/host/auths:/mnt/cliproxy/auths:ro

@@ -1,14 +1,23 @@
 {
-  "name": "CPA-XXX",
+  "name": "CPA-X",
+  "version": "2.2.0",
   "description": "CLIProxyAPI 管理面板",
   "language": "python",
   "entrypoint": "app.py",
   "env_example": ".env.example",
+  "env_examples": [".env.example", ".env.docker.example"],
   "ports": [8080],
   "healthcheck": {
-    "path": "/api/resources",
+    "path": "/healthz",
     "method": "GET",
     "timeout_seconds": 5
+  },
+  "docker": {
+    "image": "registry.maxsale.vn/tools/cpa-x:v2.2.0",
+    "dockerfile": "Dockerfile",
+    "compose": "docker-compose.yml",
+    "env_example": ".env.docker.example",
+    "notes": "Container mode is good for monitoring; auto-update and systemd service control are typically unavailable."
   },
   "install": {
     "venv_dir": ".venv",
@@ -27,9 +36,10 @@
         "python3 -m venv .venv",
         "source .venv/bin/activate",
         "pip install -r requirements.txt",
-        "cp .env.example .env"
+        "cp .env.example .env",
+        "python3 scripts/doctor.py --write-env"
       ],
-      "start": "python app.py",
+      "start": "python3 app.py",
       "systemd": {
         "service_name": "cliproxy-panel",
         "description": "CLIProxy Management Panel",
@@ -42,6 +52,7 @@
   },
   "scripts": {
     "auto_install": "scripts/auto_install.py",
+    "doctor": "scripts/doctor.py",
     "install_sh": "scripts/install.sh",
     "install_ps1": "scripts/install.ps1"
   }

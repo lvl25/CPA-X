@@ -1,0 +1,91 @@
+name: docker-publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image tag to publish, for example v2.2.0"
+        required: true
+      latest:
+        description: "Also publish latest"
+        required: false
+        default: "true"
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/lvl25/cpa-x
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve publish metadata
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            version="${{ github.event.inputs.version }}"
+            publish_latest="${{ github.event.inputs.latest }}"
+          else
+            version="${GITHUB_REF_NAME}"
+            publish_latest="true"
+          fi
+
+          if [[ ! "${version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
+            echo "Invalid version tag: ${version}" >&2
+            exit 1
+          fi
+
+          version_no_v="${version#v}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "version_no_v=${version_no_v}" >> "${GITHUB_OUTPUT}"
+          echo "publish_latest=${publish_latest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.vars.outputs.version }}
+            type=raw,value=latest,enable=${{ steps.vars.outputs.publish_latest == 'true' }}
+          labels: |
+            org.opencontainers.image.title=CPA-X
+            org.opencontainers.image.description=CPA-X admin panel for CLIProxyAPI
+            org.opencontainers.image.version=${{ steps.vars.outputs.version_no_v }}
+            org.opencontainers.image.source=https://github.com/lvl25/CPA-X
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            PANEL_VERSION=${{ steps.vars.outputs.version_no_v }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

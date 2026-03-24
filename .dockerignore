@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+__pycache__
+data
+*.log
+*.sqlite
+*.db
+*.bak
+dist
+build
+Thumbs.db
+.DS_Store
