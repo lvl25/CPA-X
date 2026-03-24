@@ -1691,6 +1691,7 @@
         }
 
         function updateUsageAnalyticsControls() {
+            const t = window.__i18n_t || ((s) => s);
             document.querySelectorAll('#usage-bucket-controls [data-bucket]').forEach((btn) => {
                 btn.classList.toggle('active', btn.dataset.bucket === usageAnalyticsState.bucket);
             });
@@ -1722,6 +1723,7 @@
         }
 
         function renderUsageAnalytics() {
+            const t = window.__i18n_t || ((s) => s);
             updateUsageAnalyticsControls();
             const data = usageAnalyticsState.data;
             const bucketPayload = data?.analytics?.[usageAnalyticsState.bucket];
@@ -1791,6 +1793,7 @@
         }
 
         function renderUsageTrendChart(bucketPayload) {
+            const t = window.__i18n_t || ((s) => s);
             const svg = document.getElementById('usage-trend-chart');
             const emptyEl = document.getElementById('usage-chart-empty');
             const tooltipEl = document.getElementById('usage-chart-tooltip');
